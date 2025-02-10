@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.0
+ * @version 1.0.1
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -12,18 +12,18 @@
  ****************************************************************/
 /* APIジャンル: GameSynth */
 #define GS_API_GET_VERSION              "get_version"           /* ツールバージョンを取得する */
-#define GS_API_GET_COMMANDS             "get_commands"          /* 利用可能なコマンド一覧を取得する */
-#define GS_API_GET_MODELS               "get_models"            /* 利用可能なモデル一覧を取得する */
+#define GS_API_GET_COMMANDS             "get_commands"          /* ツール上で利用可能なコマンド一覧を取得する */
+#define GS_API_GET_MODELS               "get_models"            /* ツール上で利用可能なモデル一覧を取得する */
 #define GS_API_SELECT_MODEL             "select_model"          /* ツール上でモデルを選択する。 */
 #define GS_API_GET_PATH                 "get_path"              /* ツールのシステムパスを取得する */
 #define GS_API_GET_SAMPLERATE           "get_samplerate"        /* ツール上のサンプリング周波数を取得する */
 #define GS_API_SET_SAMPLERATE           "set_samplerate"        /* ツールにサンプリング周波数を設定する */
 
 /* APIジャンル: リポジトリ */
-#define GS_API_QUERY_PATCHNAMES         "query_patchnames"
-#define GS_API_QUERY_PATCH              "query_patch"
-#define GS_API_QUERY_CATEGORIES         "query_categories"
-#define GS_API_QUERY_TAGS               "query_tags"
+#define GS_API_QUERY_PATCHNAMES         "query_patchnames"      /* リポジトリにあるパッチを検索する。 */
+#define GS_API_QUERY_PATCH              "query_patch"           /* リポジトリからパッチを取得しツール上で読み込む。 */
+#define GS_API_QUERY_CATEGORIES         "query_categories"      /* リポジトリで利用可能なカテゴリ一覧を取得する。 */
+#define GS_API_QUERY_TAGS               "query_tags"            /* リポジトリで利用可能なタグ一覧を取得する。 */
 
 /* APIジャンル: パッチ */
 #define GS_API_LOAD_PATCH               "load_patch"
