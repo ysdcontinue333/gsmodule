@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.0
+ * @version 1.0.1
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_INTERFACE_H
@@ -108,6 +108,36 @@ public:
      * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
      **************************************************************************/
     static bool command_set_samplerate(const std::string& samplerate);
+
+    /**************************************************************************
+     * @brief   リポジトリから一致するパッチ名を返す。
+     * @param   text : 検索したい文字列
+     * @param   name : パッチ名の検索を有効にする
+     * @param   category : カテゴリ名の検索を有効にする
+     * @param   tags : タグ名の検索を有効にする
+     * @param   patch_list : パッチ名一覧を格納する配列の参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_query_patchnames(const std::string& text, const bool name,
+        const bool category, const bool tags, std::vector<std::string>& patch_list);
+    /**************************************************************************
+     * @brief   リポジトリからパッチを取得し、ツール上で読み込む。
+     * @param   patch_name : リポジトリから取得するパッチ名の参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_query_patch(const std::string& patch_name);
+    /**************************************************************************
+     * @brief   リポジトリからカテゴリ一覧を取得する。
+     * @param   categoryt_list : カテゴリ一覧を格納する配列の参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_query_categories(std::vector<std::string>& categoryt_list);
+    /**************************************************************************
+     * @brief   リポジトリからタグ一覧を取得する。
+     * @param   tag_list : タグ一覧を格納する配列の参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_query_tags(std::vector<std::string>& tag_list);
 
 private:
     static GsApiInterfaceConfig gs_config;
