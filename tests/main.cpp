@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.0
+ * @version 1.0.1
  * @auther  ysd
  ****************************************************************/
 
@@ -133,5 +133,65 @@ TEST_F(GS_API_TEST, TEST_GS_API_SET_SAMPLERATE) {
     const std::string samplerate = GS_SAMPLERATE_48000;
     const bool res = gs_api_interface::command_set_samplerate(samplerate);
     std::cout << samplerate << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリを検索(パッチ名) */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_NAME) {
+    const std::string text = "Magic"; /* 検索する文字列 */
+    std::vector<std::string> patch_list;
+    const bool res = gs_api_interface::command_query_patchnames(text, true, false, false, patch_list);
+    for (auto patch_name : patch_list) {
+        std::cout << patch_name << std::endl;
+    }
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリを検索(カテゴリ) */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_CATEGORY) {
+    const std::string text = "Magic"; /* 検索する文字列 */
+    std::vector<std::string> patch_list;
+    const bool res = gs_api_interface::command_query_patchnames(text, false, true, false, patch_list);
+    for (auto patch_name : patch_list) {
+        std::cout << patch_name << std::endl;
+    }
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリを検索(タグ) */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_TAGS) {
+    const std::string text = "Magic"; /* 検索する文字列 */
+    std::vector<std::string> patch_list;
+    const bool res = gs_api_interface::command_query_patchnames(text, false, false, true, patch_list);
+    for (auto patch_name : patch_list) {
+        std::cout << patch_name << std::endl;
+    }
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリからパッチを取得してツール上で読み込む */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCH) {
+    const std::string text = "Ascent"; /* 検索する文字列 */
+    const bool res = gs_api_interface::command_query_patch(text);
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリで使用可能なカテゴリのリスト */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_CATEGORIES) {
+    std::vector<std::string> category_list;
+    const bool res = gs_api_interface::command_query_categories(category_list);
+    for (auto category : category_list) {
+        std::cout << category << std::endl;
+    }
+    EXPECT_EQ(res, true);
+};
+
+/* リポジトリで使用可能なタグのリスト */
+TEST_F(GS_API_TEST, TEST_GS_API_QUERY_TAGS) {
+    std::vector<std::string> tag_list;
+    const bool res = gs_api_interface::command_query_categories(tag_list);
+    for (auto category : tag_list) {
+        std::cout << category << std::endl;
+    }
     EXPECT_EQ(res, true);
 };

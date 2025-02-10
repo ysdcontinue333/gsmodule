@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.0
+ * @version 1.0.1
  * @auther  ysd
  ****************************************************************/
 
@@ -30,7 +30,7 @@
 
 /* ツールから受信するメッセージに含まれるデリミタ */
 #define MESSAGE_DELIMITER_SPACE         ' '
-#define MESSAGE_DELIMITER               ','
+#define MESSAGE_DELIMITER_COMMA         ','
 
 /****************************************************************
  * 構造体宣言
@@ -211,7 +211,7 @@ bool gs_api_interface::command_get_commands(std::vector<std::string>& commmand_l
     oss << GS_API_GET_COMMANDS << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
-    string_split(response, MESSAGE_DELIMITER, commmand_list);
+    string_split(response, MESSAGE_DELIMITER_COMMA, commmand_list);
     return result;
 }
 
@@ -222,7 +222,7 @@ bool gs_api_interface::command_get_models(std::vector<std::string>& model_list)
     oss << GS_API_GET_MODELS << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
-    string_split(response, MESSAGE_DELIMITER, model_list);
+    string_split(response, MESSAGE_DELIMITER_COMMA, model_list);
     return result;
 }
 
@@ -271,5 +271,56 @@ bool gs_api_interface::command_set_samplerate(const std::string& samplerate)
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_query_patchnames(const std::string& text, const bool name,
+    const bool category, const bool tags, std::vector<std::string>& patch_list)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_QUERY_PATCHNAMES
+        << MESSAGE_DELIMITER_SPACE << text
+        << MESSAGE_DELIMITER_SPACE << (name ? "1" : "0")
+        << MESSAGE_DELIMITER_SPACE << (category ? "1" : "0")
+        << MESSAGE_DELIMITER_SPACE << (tags ? "1" : "0")
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    string_split(response, MESSAGE_DELIMITER_COMMA, patch_list);
+    return result;
+}
+
+bool gs_api_interface::command_query_patch(const std::string& patch_name)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_QUERY_PATCH
+        << MESSAGE_DELIMITER_SPACE << patch_name
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_query_categories(std::vector<std::string>& categoryt_list)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_QUERY_CATEGORIES << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    string_split(response, MESSAGE_DELIMITER_COMMA, categoryt_list);
+    return result;
+}
+
+bool gs_api_interface::command_query_tags(std::vector<std::string>& tag_list)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_QUERY_TAGS << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    string_split(response, MESSAGE_DELIMITER_COMMA, tag_list);
     return result;
 }
