@@ -17,5 +17,5 @@
 
 ## 依存ライブラリ
 
-- パッチファイルの解析に[tinyxml2](https://github.com/leethomason/tinyxml2)を利用します。
-- ライブラリのテストコードに[googletest](https://github.com/google/googletest)を利用します。
+- gsmoduleは、パッチファイルの解析に[tinyxml2](https://github.com/leethomason/tinyxml2)を利用します。
+- testsは、ライブラリのテストコードに[googletest](https://github.com/google/googletest)を利用します。
