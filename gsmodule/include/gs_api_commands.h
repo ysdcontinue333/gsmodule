@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.1
+ * @version 1.0.2
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -26,15 +26,15 @@
 #define GS_API_QUERY_TAGS               "query_tags"            /* リポジトリで利用可能なタグ一覧を取得する。 */
 
 /* APIジャンル: パッチ */
-#define GS_API_LOAD_PATCH               "load_patch"
-#define GS_API_SAVE_PATCH               "save_patch"
-#define GS_API_RENDER_PATCH             "render_patch"
-#define GS_API_GET_MODELNAME            "get_modelname"
-#define GS_API_GET_PATCHNAME            "get_patchname"
-#define GS_API_GET_VARIATION            "get_variation"
-#define GS_API_SET_VARIATION            "set_variation"
-#define GS_API_GET_DRAWING              "get_drawing"
-#define GS_API_SET_DRAWING              "set_drawing"
+#define GS_API_LOAD_PATCH               "load_patch"            /* パスで指定したパッチをツールで読み込む。 */
+#define GS_API_SAVE_PATCH               "save_patch"            /* ツールで開いているパッチを指定したパスに保存する。 */
+#define GS_API_RENDER_PATCH             "render_patch"          /* ツールで開いているパッチを指定したパスに出力する。 */
+#define GS_API_GET_MODELNAME            "get_modelname"         /* ツールで開いているパッチのモデル名を取得する。 */
+#define GS_API_GET_PATCHNAME            "get_patchname"         /* ツールで開いているパッチのパッチ名を取得する。 */
+#define GS_API_GET_VARIATION            "get_variation"         /* ツールで開いているパッチのランダムバリエーションを取得する。 */
+#define GS_API_SET_VARIATION            "set_variation"         /* ツールで開いているパッチにランダムバリエーションを設定する。 */
+#define GS_API_GET_DRAWING              "get_drawing"           /* ツールで開いているパッチの曲線の情報を取得する。*/
+#define GS_API_SET_DRAWING              "set_drawing"           /* ツールで開いているパッチに曲線の情報を設定する。*/
 
 /* APIジャンル: メタパラメータ */
 #define GS_API_GET_METACOUNT            "get_metacount"

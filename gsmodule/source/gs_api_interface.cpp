@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.1
+ * @version 1.0.3
  * @auther  ysd
  ****************************************************************/
 
@@ -17,12 +17,13 @@
 #endif
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 /****************************************************************
  * プリプロセッサ定義
  ****************************************************************/
 /* ツールとの通信時に待機する時間 */
-#define WAIT_TO_READY_READ_MSEC         (20)
+#define WAIT_TO_READY_READ_MSEC         (300) /* 備考:読込待機しないと一部コマンドで失敗する */
 #define WAIT_TO_RECEIVE_MESSAGE_SEC     (1)
 
 /* ツールから受信するメッセージサイズ */
@@ -43,13 +44,7 @@
 /****************************************************************
  * 変数定義
  ****************************************************************/
-GsApiInterfaceConfig gs_api_interface::gs_config =
-{
-    GS_API_INTERFACE_DEFAULT_PORT_NUMBER,
-    GS_API_INTERFACE_DEFAULT_IP_ADDRESS,
-    GS_API_INTERFACE_DEFAULT_CODEC,
-    GS_API_INTERFACE_DEFAULT_DELIMITER,
-};
+GsApiInterfaceConfig gs_api_interface::gs_config;
 
 /****************************************************************
  * 関数宣言
@@ -322,5 +317,145 @@ bool gs_api_interface::command_query_tags(std::vector<std::string>& tag_list)
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, tag_list);
+    return result;
+}
+
+bool gs_api_interface::command_load_patch(const std::string& file_path)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_LOAD_PATCH
+        << MESSAGE_DELIMITER_SPACE
+        << file_path
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_save_patch(const std::string& file_path)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SAVE_PATCH
+        << MESSAGE_DELIMITER_SPACE
+        << file_path
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_render_patch(const std::string& file_path, const unsigned int depth,
+    const unsigned int channel, const unsigned int duration)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_RENDER_PATCH
+        << MESSAGE_DELIMITER_SPACE << file_path
+        << MESSAGE_DELIMITER_SPACE << std::to_string(depth)
+        << MESSAGE_DELIMITER_SPACE << std::to_string(channel)
+        << MESSAGE_DELIMITER_SPACE << std::to_string(duration)
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_get_modelname(std::string& model_name)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_MODELNAME << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    model_name = response;
+    return result;
+}
+
+bool gs_api_interface::command_get_patchname(std::string& patch_name)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_PATCHNAME << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    patch_name = response;
+    return result;
+}
+
+bool gs_api_interface::command_get_variation(float& variation)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_VARIATION << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    variation = static_cast<float>(std::stof(response));
+    return result;
+}
+
+bool gs_api_interface::command_set_variation(const float& variation)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_VARIATION
+        << MESSAGE_DELIMITER_SPACE << variation
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_get_drawing(const unsigned int index, std::vector<GsDrawingData>& drawing_data)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_DRAWING
+        << MESSAGE_DELIMITER_SPACE << index
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+
+    response.erase(std::remove(response.begin(), response.end(), '\r'), response.end());
+    response.erase(std::remove(response.begin(), response.end(), '('), response.end());
+    std::vector<std::string> point_list;
+    string_split(response, ')', point_list);
+    /* スケッチパッドの曲線の情報をパースする */
+    for (auto point : point_list) {
+        std::vector<std::string> param_list;
+        string_split(point, ',', param_list);
+        if (param_list.size() != 4) {
+            continue;
+        }
+        GsDrawingData drawing;
+        drawing.t = std::stof(param_list[0]);
+        drawing.x = std::stof(param_list[1]);
+        drawing.y = std::stof(param_list[2]);
+        drawing.p = std::stof(param_list[3]);
+        drawing_data.push_back(drawing);
+    }
+    return result;
+}
+
+bool gs_api_interface::command_set_drawing(const std::vector<GsDrawingData>& drawing_data)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_DRAWING
+        << MESSAGE_DELIMITER_SPACE;
+    for (auto it = drawing_data.begin(); it != drawing_data.end(); ++it) {
+        if (it != drawing_data.begin()) {
+            oss << ',';
+        }
+        oss << '('
+            << it->t << ','
+            << it->x << ','
+            << it->y << ','
+            << it->p << ')';
+    }
+    oss << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
     return result;
 }
