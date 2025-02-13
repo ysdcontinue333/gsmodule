@@ -21,3 +21,6 @@ target_link_libraries(${GS_TEST} PRIVATE
     gsmodule
     gtest
 )
+target_compile_definitions(${GS_TEST} PRIVATE
+    CMAKE_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+)

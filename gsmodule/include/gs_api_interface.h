@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.1
+ * @version 1.0.3
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_INTERFACE_H
@@ -28,6 +28,14 @@ typedef struct GsApiInterfaceConfigStruct {
     std::string     codec           = GS_API_INTERFACE_DEFAULT_CODEC;           /* メッセージ:圧縮形式 */
     std::string     delimiter       = GS_API_INTERFACE_DEFAULT_DELIMITER;       /* メッセージ:デリミタ */
 } GsApiInterfaceConfig;
+
+/*スケッチパッドに描かれている曲線を格納する構造体 */
+typedef struct GsDrawingDataStruct {
+    float t = 0.f;                                                              /* 秒単位の時間 [0….60] */
+    float x = 0.f;                                                              /* 水平位置 [0…1] */
+    float y = 0.f;                                                              /* 垂直位置 [0…1] */
+    float p = 0.f;                                                              /* 筆圧量[0…1] */
+} GsDrawingData;
 
 /****************************************************************
  * クラス宣言
@@ -138,6 +146,67 @@ public:
      * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
      **************************************************************************/
     static bool command_query_tags(std::vector<std::string>& tag_list);
+
+    /**************************************************************************
+     * @brief   ファイルパスにあるパッチファイルをツール上で開く。
+     * @param   file_path : パッチファイルのパスの参照
+     * @return  GameSynthから応答があればtrueを返す。それ以外はfalseを返す
+     **************************************************************************/
+    static bool command_load_patch(const std::string& file_path);
+    /**************************************************************************
+     * @brief   パッチをファイルパスに保存する。
+     * @param   file_path : パッチファイルのパスの参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_save_patch(const std::string& file_path);
+    /**************************************************************************
+     * @brief   パッチをファイルパスにレンダリングする。
+     * @param   file_path : 音源ファイルのパスの参照
+     * @param   depth : ビット深度
+     * @param   channel : チャンネル数
+     * @param   duration : デュレーション
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_render_patch(const std::string& file_path, const unsigned int depth,
+        const unsigned int channel, const unsigned int duration);
+    /**************************************************************************
+     * @brief   パッチのモデル名を取得する。
+     * @param   model_name : モデル名を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_modelname(std::string& model_name);
+    /**************************************************************************
+     * @brief   パッチのパッチ名を取得する。
+     * @param   patch_name : パッチ名を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_patchname(std::string& patch_name);
+    /**************************************************************************
+     * @brief   パッチのバリエーションを取得する。
+     * @param   variation : パッチのに設定された値を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_variation(float& variation);
+    /**************************************************************************
+     * @brief   パッチにバリエーションを設定する。
+     * @param   variation : パッチに設定したい値への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_variation(const float& variation);
+    /**************************************************************************
+     * @brief   パッチに設定された曲線を取得する。
+     * @param   index : パッチに設定された曲線の番号
+     * @param   drawing_data : パッチに設定された曲線の情報を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_drawing(const unsigned int index, std::vector<GsDrawingData>& drawing_data);
+    /**************************************************************************
+     * @brief   パッチに曲線を設定する。
+     * @param   drawing_data : パッチに設定したい曲線の情報への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_drawing(const std::vector<GsDrawingData>& drawing_data);
+
 
 private:
     static GsApiInterfaceConfig gs_config;

@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.1
+ * @version 1.0.2
  * @auther  ysd
  ****************************************************************/
 
@@ -16,6 +16,7 @@
 /****************************************************************
  * プリプロセッサ定義
  ****************************************************************/
+/* システムパス取得のテストで使用する文字列 */
 #define GS_PATH_PATCH_FOLDER            "PATCH_FOLDER"          /* パッチパス */
 #define GS_PATH_BANK_FOLDER             "BANK_FOLDER"           /* バンクパス */
 #define GS_PATH_BINARY_FOLDER           "BINARY_FOLDER"         /* バイナリバンクのエクスポートパス */
@@ -29,8 +30,19 @@
 #define GS_PATH_RANDOMPATCH_FOLDER      "RANDOMPATCH_FOLDER"    /* ランダムパッチ生成時にオーディオアセットを取得する際のパス */
 #define GS_PATH_AUDIOEDITOR_EXE         "AUDIOEDITOR_EXE"       /* オーディオエディタへのパス */
 
-#define GS_SAPMLERATE_44100             "44100"                 /* 44100Hz */
-#define GS_SAMPLERATE_48000             "48000"                 /* 48000Hz */
+/* サンプリング周波数のテストで使用する数値 */
+#define GS_SAPMLERATE_44100             "44100"
+#define GS_SAMPLERATE_48000             "48000"
+
+/* パッチ操作のテストで使用するパス */
+#define TEST_LOAD_FILE_NAME             "TestPatch.gspatch"
+#define TEST_SAVE_FILE_NAME             "TestPatch.gspatch"
+#define TEST_RENDER_FILE_NAME           "TestPatch.wav"
+
+ /****************************************************************
+  * 変数定義
+  ****************************************************************/
+std::string source_path;
 
 /****************************************************************
  * クラス定義
@@ -193,5 +205,100 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_TAGS) {
     for (auto category : tag_list) {
         std::cout << category << std::endl;
     }
+    EXPECT_EQ(res, true);
+};
+
+/* パッチを保存する */
+TEST_F(GS_API_TEST, TEST_GS_API_SAVE_PATCH) {
+    {
+        /* パッチを保存するため、リポジトリから取得 */
+        const std::string text = "Lightsabers"; /* 検索する文字列 */
+        const bool res = gs_api_interface::command_query_patch(text);
+        EXPECT_EQ(res, true);
+    }
+    std::ostringstream oss;
+    oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_SAVE_FILE_NAME;
+    std::string file_path = oss.str();
+    const bool res = gs_api_interface::command_save_patch(file_path);
+    EXPECT_EQ(res, true);
+};
+
+/* パッチを読み込む */
+TEST_F(GS_API_TEST, TEST_GS_API_LOAD_PATCH) {
+    {
+        /* パッチが切り替わることを確認するため、リポジトリから取得 */
+        const std::string text = "Ascent"; /* 検索する文字列 */
+        const bool res = gs_api_interface::command_query_patch(text);
+        EXPECT_EQ(res, true);
+    }
+    std::ostringstream oss;
+    oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_LOAD_FILE_NAME;
+    std::string file_path = oss.str();
+    const bool res = gs_api_interface::command_load_patch(file_path);
+    EXPECT_EQ(res, true);
+};
+
+/* パッチを出力する */
+TEST_F(GS_API_TEST, TEST_GS_API_RENDER_PATCH) {
+    std::ostringstream oss;
+    oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_RENDER_FILE_NAME;
+    std::string file_path = oss.str();
+    const unsigned int depth = 16;
+    const unsigned int channel = 1;
+    const unsigned int duration = 10;
+    const bool res = gs_api_interface::command_render_patch(file_path, depth, channel, duration);
+    EXPECT_EQ(res, true);
+};
+
+/* 現在のモデル名を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_MODELNAME) {
+    std::string model_name;
+    const bool res = gs_api_interface::command_get_modelname(model_name);
+    std::cout << model_name << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* 現在のパッチ名を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_PATCHNAME) {
+    std::string patch_name;
+    const bool res = gs_api_interface::command_get_patchname(patch_name);
+    std::cout << patch_name << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* ランダムバリエーションを取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_VARIATION) {
+    float variation;
+    const bool res = gs_api_interface::command_get_variation(variation);
+    std::cout << variation << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* ランダムバリエーションを設定する */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_VARIATION) {
+    const float variation = 76.54f;
+    const bool res = gs_api_interface::command_set_variation(variation);
+    std::cout << variation << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* スケッチパッドの曲線の情報を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_DRAWING) {
+    std::vector<GsDrawingData> drawing_data;
+    const bool res = gs_api_interface::command_get_drawing(0, drawing_data);
+    for (auto point : drawing_data) {
+        std::cout << '(' << point.t << ',' << point.x << ',' << point.y << ',' << point.p << ')' << ',';
+    }
+    std::cout << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* スケッチパッドに曲線の情報を設定する */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_DRAWING) {
+    const std::vector<GsDrawingData> drawing_data = {
+        {0.f, 0.f, 0.f, 0.f},
+        {0.5f, 0.5f, 0.5f, 1.f}
+    };
+    const bool res = gs_api_interface::command_set_drawing(drawing_data);
     EXPECT_EQ(res, true);
 };
