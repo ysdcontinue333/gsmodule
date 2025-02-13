@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.2
+ * @version 1.0.3
  * @auther  ysd
  ****************************************************************/
 
@@ -87,6 +87,15 @@ protected:
     /* 各テストの実行後 */
     virtual void TearDown() {
     }
+};
+
+/* 何らかのメッセージを送信するテスト */
+TEST_F(GS_API_TEST, TEST_SEND_COMMAND) {
+    const std::string command = "get_version";
+    std::string response = "";
+    const bool res = gs_api_interface::send_command(command, response);
+    std::cout << response << std::endl;
+    EXPECT_EQ(res, true);
 };
 
 /* ツールと通信可能か */
