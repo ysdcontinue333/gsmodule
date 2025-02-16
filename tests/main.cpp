@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.3
+ * @version 1.0.4
  * @auther  ysd
  ****************************************************************/
 
@@ -309,5 +309,64 @@ TEST_F(GS_API_TEST, TEST_GS_API_SET_DRAWING) {
         {0.5f, 0.5f, 0.5f, 1.f}
     };
     const bool res = gs_api_interface::command_set_drawing(drawing_data);
+    EXPECT_EQ(res, true);
+};
+
+/* メタパラメータの数を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_METACOUNT) {
+    unsigned int meta_count;
+    const bool res = gs_api_interface::command_get_metacount(meta_count);
+    std::cout << meta_count << std::endl;
+    EXPECT_EQ(res, true);
+};
+/* メタパラメータ名のリストを取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_METNAMES) {
+    std::vector<std::string> meta_names;
+    const bool res = gs_api_interface::command_get_metanames(meta_names);
+    for (auto patch_name : meta_names) {
+        std::cout << patch_name << std::endl;
+    }
+    EXPECT_EQ(res, true);
+};
+/* インデックスで指定したメタパラメータの名前を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_METANAME) {
+    const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
+    std::string meta_name;
+    const bool res = gs_api_interface::command_get_metaname(index, meta_name);
+    std::cout << meta_name << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* インデックスで指定したメタパラメータの値を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_METAVALUE_BY_INDEX) {
+    const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
+    float meta_value;
+    const bool res = gs_api_interface::command_get_metavalue(index, meta_value);
+    std::cout << meta_value << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* 名前で指定したメタパラメータの値を取得する */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_METAVALUE_NAME) {
+    const std::string name = "meta_param_01"; /* パッチで定義されているメタパラメータ名を指定 */
+    float meta_value;
+    const bool res = gs_api_interface::command_get_metavalue(name, meta_value);
+    std::cout << meta_value << std::endl;
+    EXPECT_EQ(res, true);
+};
+
+/* インデックスで指定したメタパラメータに値を設定する */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_METAVALUE_BY_INDEX) {
+    const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
+    float meta_value = 0.67f;
+    const bool res = gs_api_interface::command_set_metavalue(index, meta_value);
+    EXPECT_EQ(res, true);
+};
+
+/* 名前で指定したメタパラメータに値を設定する */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_METAVALUE_BY_NAME) {
+    const std::string name = "meta_param_01"; /* パッチで定義されているメタパラメータ名を指定 */
+    const float meta_value = 0.78f;
+    const bool res = gs_api_interface::command_set_metavalue(name, meta_value);
     EXPECT_EQ(res, true);
 };

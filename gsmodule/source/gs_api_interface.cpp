@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.3
+ * @version 1.0.4
  * @auther  ysd
  ****************************************************************/
 
@@ -32,6 +32,10 @@
 /* ツールから受信するメッセージに含まれるデリミタ */
 #define MESSAGE_DELIMITER_SPACE         ' '
 #define MESSAGE_DELIMITER_COMMA         ','
+
+/* メタパラメータを取得するときに使用する文字列 */
+#define GS_METAVALUE_BY_INDEX       "BY_INDEX"
+#define GS_METAVALUE_BY_NAME        "BY_NAME"
 
 /****************************************************************
  * 構造体宣言
@@ -455,6 +459,96 @@ bool gs_api_interface::command_set_drawing(const std::vector<GsDrawingData>& dra
             << it->p << ')';
     }
     oss << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_get_metacount(unsigned int& meta_count)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_METACOUNT << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    meta_count = std::stoi(response);
+    return result;
+}
+
+bool gs_api_interface::command_get_metanames(std::vector<std::string>& meta_names)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_METANAMES << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    string_split(response, MESSAGE_DELIMITER_COMMA, meta_names);
+    return result;
+}
+
+bool gs_api_interface::command_get_metaname(const unsigned int& index, std::string& metaname)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_METANAME
+        << MESSAGE_DELIMITER_SPACE << index
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    metaname = response;
+    return result;
+}
+
+bool gs_api_interface::command_get_metavalue(const unsigned int& index, float& metavalue)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_METAVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_INDEX
+        << MESSAGE_DELIMITER_SPACE << index
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    metavalue = std::stof(response);
+    return result;
+}
+
+bool gs_api_interface::command_get_metavalue(const std::string& name, float& metavalue)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_METAVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_NAME
+        << MESSAGE_DELIMITER_SPACE << name
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    metavalue = std::stof(response);
+    return result;
+}
+bool gs_api_interface::command_set_metavalue(const unsigned int& index, const float& metavalue)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_METAVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_INDEX
+        << MESSAGE_DELIMITER_SPACE << index
+        << MESSAGE_DELIMITER_SPACE << metavalue
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_set_metavalue(const std::string& name, const float& metavalue)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_METAVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_NAME
+        << MESSAGE_DELIMITER_SPACE << name
+        << MESSAGE_DELIMITER_SPACE << metavalue
+        << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     return result;
