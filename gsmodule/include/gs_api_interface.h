@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.3
+ * @version 1.0.4
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_INTERFACE_H
@@ -206,6 +206,54 @@ public:
      * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
      **************************************************************************/
     static bool command_set_drawing(const std::vector<GsDrawingData>& drawing_data);
+
+    /**************************************************************************
+     * @brief   パッチのメタパラメータ数を取得する。
+     * @param   meta_count : メタパラメータ数を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_metacount(unsigned int& meta_count);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータの一覧を取得する。
+     * @param   meta_names : メタパラメータの一覧を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_metanames(std::vector<std::string>& meta_names);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータの名前を取得する。
+     * @param   index : メタパラメータのインデックスの数値
+     * @param   metaname : メタパラメータの名前を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_metaname(const unsigned int& index, std::string& metaname);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータの値を取得する。
+     * @param   index : メタパラメータのインデックスの数値
+     * @param   metavalue : ツールから返されたメタパラメータの数値を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_metavalue(const unsigned int& index, float& metavalue);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータの値を取得する。
+     * @param   name : メタパラメータの名前
+     * @param   metavalue : ツールから返されたメタパラメータの数値を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_metavalue(const std::string& name, float& metavalue);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータに値を設定する。
+     * @param   index : メタパラメータのインデックスの数値
+     * @param   metavalue : ツールに設定したいメタパラメータの数値への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_metavalue(const unsigned int& index, const float& metavalue);
+    /**************************************************************************
+     * @brief   パッチのメタパラメータに値を設定する。
+     * @param   name : メタパラメータの名前
+     * @param   metavalue : ツールに設定したいメタパラメータの数値への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_metavalue(const std::string& name, const float& metavalue);
 
 
 private:

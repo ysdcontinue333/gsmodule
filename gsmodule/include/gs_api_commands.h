@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.2
+ * @version 1.0.3
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -37,11 +37,13 @@
 #define GS_API_SET_DRAWING              "set_drawing"           /* ツールで開いているパッチに曲線の情報を設定する。*/
 
 /* APIジャンル: メタパラメータ */
-#define GS_API_GET_METACOUNT            "get_metacount"
-#define GS_API_GET_METANAMES            "get_metanames"
-#define GS_API_GET_METANAME             "get_metaname"
-#define GS_API_GET_METAVALUE            "get_metavalue"
-#define GS_API_SET_METAVALUE            "set_metavalue"
+#define GS_API_GET_METACOUNT            "get_metacount"         /* ツールで開いているパッチのメタパラメータ数を取得する。 */
+#define GS_API_GET_METANAMES            "get_metanames"         /* ツールで開いているパッチのメタパラメータ一覧を取得する。 */
+#define GS_API_GET_METANAME             "get_metaname"          /* ツールで開いているパッチのメタパラメータの名前を取得する。 */
+#define GS_API_GET_METAVALUE            "get_metavalue"         /* ツールで開いているパッチのメタパラメータの値を取得する。 */
+#define GS_API_SET_METAVALUE            "set_metavalue"         /* ツールで開いているパッチのメタパラメータに値を設定する。 */
+
+/* APIジャンル: オートメーションカーブ */
 #define GS_API_GET_CURVESCOUNT          "get_curvescount"
 #define GS_API_GET_CURVENAMES           "get_curvenames"
 #define GS_API_GET_CURVENAME            "get_curvename"
