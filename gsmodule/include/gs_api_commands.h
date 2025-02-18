@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.3
+ * @version 1.0.4
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -27,28 +27,28 @@
 
 /* APIジャンル: パッチ */
 #define GS_API_LOAD_PATCH               "load_patch"            /* パスで指定したパッチをツールで読み込む。 */
-#define GS_API_SAVE_PATCH               "save_patch"            /* ツールで開いているパッチを指定したパスに保存する。 */
-#define GS_API_RENDER_PATCH             "render_patch"          /* ツールで開いているパッチを指定したパスに出力する。 */
-#define GS_API_GET_MODELNAME            "get_modelname"         /* ツールで開いているパッチのモデル名を取得する。 */
-#define GS_API_GET_PATCHNAME            "get_patchname"         /* ツールで開いているパッチのパッチ名を取得する。 */
-#define GS_API_GET_VARIATION            "get_variation"         /* ツールで開いているパッチのランダムバリエーションを取得する。 */
-#define GS_API_SET_VARIATION            "set_variation"         /* ツールで開いているパッチにランダムバリエーションを設定する。 */
-#define GS_API_GET_DRAWING              "get_drawing"           /* ツールで開いているパッチの曲線の情報を取得する。*/
-#define GS_API_SET_DRAWING              "set_drawing"           /* ツールで開いているパッチに曲線の情報を設定する。*/
+#define GS_API_SAVE_PATCH               "save_patch"            /* 現在のパッチを指定したパスに保存する。 */
+#define GS_API_RENDER_PATCH             "render_patch"          /* 現在のパッチを指定したパスに出力する。 */
+#define GS_API_GET_MODELNAME            "get_modelname"         /* 現在のパッチのモデル名を取得する。 */
+#define GS_API_GET_PATCHNAME            "get_patchname"         /* 現在のパッチのパッチ名を取得する。 */
+#define GS_API_GET_VARIATION            "get_variation"         /* 現在のパッチのランダムバリエーションを取得する。 */
+#define GS_API_SET_VARIATION            "set_variation"         /* 現在のパッチにランダムバリエーションを設定する。 */
+#define GS_API_GET_DRAWING              "get_drawing"           /* 現在のパッチの曲線の情報を取得する。*/
+#define GS_API_SET_DRAWING              "set_drawing"           /* 現在のパッチに曲線の情報を設定する。*/
 
 /* APIジャンル: メタパラメータ */
-#define GS_API_GET_METACOUNT            "get_metacount"         /* ツールで開いているパッチのメタパラメータ数を取得する。 */
-#define GS_API_GET_METANAMES            "get_metanames"         /* ツールで開いているパッチのメタパラメータ一覧を取得する。 */
-#define GS_API_GET_METANAME             "get_metaname"          /* ツールで開いているパッチのメタパラメータの名前を取得する。 */
-#define GS_API_GET_METAVALUE            "get_metavalue"         /* ツールで開いているパッチのメタパラメータの値を取得する。 */
-#define GS_API_SET_METAVALUE            "set_metavalue"         /* ツールで開いているパッチのメタパラメータに値を設定する。 */
+#define GS_API_GET_METACOUNT            "get_metacount"         /* 現在のパッチのメタパラメータ数を取得する。 */
+#define GS_API_GET_METANAMES            "get_metanames"         /* 現在のパッチのメタパラメータ一覧を取得する。 */
+#define GS_API_GET_METANAME             "get_metaname"          /* 現在のパッチのメタパラメータの名前を取得する。 */
+#define GS_API_GET_METAVALUE            "get_metavalue"         /* 現在のパッチのメタパラメータの値を取得する。 */
+#define GS_API_SET_METAVALUE            "set_metavalue"         /* 現在のパッチのメタパラメータに値を設定する。 */
 
 /* APIジャンル: オートメーションカーブ */
-#define GS_API_GET_CURVESCOUNT          "get_curvescount"
-#define GS_API_GET_CURVENAMES           "get_curvenames"
-#define GS_API_GET_CURVENAME            "get_curvename"
-#define GS_API_GET_CURVEVALUE           "get_curvevalue"
-#define GS_API_SET_CURVEVALUE           "set_curvevalue"
+#define GS_API_GET_CURVESCOUNT          "get_curvescount"       /* 現在のパッチのオートメーションカーブ数を取得する。 */
+#define GS_API_GET_CURVENAMES           "get_curvenames"        /* 現在のパッチのオートメーションカーブ一覧を取得する。*/
+#define GS_API_GET_CURVENAME            "get_curvename"         /* 現在のパッチのオートメーションカーブの名前を取得する。 */
+#define GS_API_GET_CURVEVALUE           "get_curvevalue"        /* 現在のパッチのオートメーションカーブの値を取得する。 */
+#define GS_API_SET_CURVEVALUE           "set_curvevalue"        /* 現在のパッチのオートメーションカーブに値を設定する。 */
 
 /* APIジャンル: 再生 */
 #define GS_API_PLAY                     "play"

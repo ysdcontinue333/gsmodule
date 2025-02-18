@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.4
+ * @version 1.0.5
  * @auther  ysd
  ****************************************************************/
 
@@ -370,3 +370,78 @@ TEST_F(GS_API_TEST, TEST_GS_API_SET_METAVALUE_BY_NAME) {
     const bool res = gs_api_interface::command_set_metavalue(name, meta_value);
     EXPECT_EQ(res, true);
 };
+
+/* オートメーションカーブ値を取得する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVECOUNT) {
+    unsigned int curve_count = 0;
+    const bool res = gs_api_interface::command_get_curvescount(curve_count);
+    std::cout << curve_count << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* オートメーションカーブ名のリストを取得する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVENAMES) {
+    std::vector<std::string> curve_names;
+    const bool res = gs_api_interface::command_get_curvenames(curve_names);
+    for (auto curve_name : curve_names) {
+        std::cout << curve_name << std::endl;
+    }
+    EXPECT_EQ(res, true);
+}
+
+/* インデックスで指定したオートメーションカーブの名前を取得する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVENAME) {
+    const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
+    std::string curve_name;
+    const bool res = gs_api_interface::command_get_curvename(curve_index, curve_name);
+    std::cout << curve_name << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* インデックスで指定したオートメーションカーブの値を取得する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_INDEX) {
+    const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
+    GsCurveValue curve_value;
+    const bool res = gs_api_interface::command_get_curvevalue(curve_index, curve_value);
+    for (auto point : curve_value.curve) {
+        std::cout << '(' << point.x << ',' << point.y << ')' << std::endl;
+    }
+    std::cout << curve_value.duration << std::endl;
+    std::cout << curve_value.is_loop << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* 名前で指定したオートメーションカーブの値を取得する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_NAME) {
+    const std::string curve_name = "Noise Amplitude"; /* パッチで定義されているオートメーションカーブの名前 */
+    GsCurveValue curve_value;
+    const bool res = gs_api_interface::command_get_curvevalue(curve_name, curve_value);
+    for (auto point : curve_value.curve) {
+        std::cout << '(' << point.x << ',' << point.y << ')' << std::endl;
+    }
+    std::cout << curve_value.duration << std::endl;
+    std::cout << curve_value.is_loop << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* インデックスで指定したオートメーションカーブに値を設定する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_CURVEVALUE_BY_INDEX) {
+    const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
+    GsCurveValue curve_value;
+    curve_value.curve = { {0,0}, {1,1} };
+    curve_value.duration = 0.56f;
+    curve_value.is_loop = false;
+    const bool res = gs_api_interface::command_set_curvevalue(curve_index, curve_value);
+    EXPECT_EQ(res, true);
+}
+
+/* 名前で指定したオートメーションカーブに値を設定する。 */
+TEST_F(GS_API_TEST, TEST_GS_API_SET_CURVEVALUE_BY_NAME) {
+    const std::string curve_name = "Noise Amplitude"; /* パッチで定義されているオートメーションカーブの名前 */
+    GsCurveValue curve_value;
+    curve_value.curve = { {0,0}, {1,1} };
+    curve_value.duration = 0.67f;
+    curve_value.is_loop = true;
+    const bool res = gs_api_interface::command_set_curvevalue(curve_name, curve_value);
+    EXPECT_EQ(res, true);
+}

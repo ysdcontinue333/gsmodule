@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.4
+ * @version 1.0.5
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_INTERFACE_H
@@ -36,6 +36,19 @@ typedef struct GsDrawingDataStruct {
     float y = 0.f;                                                              /* 垂直位置 [0…1] */
     float p = 0.f;                                                              /* 筆圧量[0…1] */
 } GsDrawingData;
+
+/* オートメーションカーブの座標情報を格納する */
+typedef struct GsCurvePointStruct {
+    float x = 0.f;                                                              /* X値 [0-1] */
+    float y = 0.f;                                                              /* Y値 [0-1] */
+} GsCurvePoint;
+
+/* オートメーションカーブの曲線を格納する構造体 */
+typedef struct GsCurveValueStruct {
+    std::vector<GsCurvePoint>   curve;                                          /* 連続した座標 */
+    float                       duration = 0;                                   /* 持続時間 [0-60] */
+    bool                        is_loop = false;                                /* ループ情報 [0,1] */
+} GsCurveValue;
 
 /****************************************************************
  * クラス宣言
@@ -255,6 +268,53 @@ public:
      **************************************************************************/
     static bool command_set_metavalue(const std::string& name, const float& metavalue);
 
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブ数を取得する。
+     * @param   curves_count : オートメーションカーブ数を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_curvescount(unsigned int& curves_count);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブの一覧を取得する。
+     * @param   curve_names : オートメーションカーブの一覧を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_curvenames(std::vector<std::string>& curve_names);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブの名前を取得する。
+     * @param   curve_index : オートメーションカーブのインデックスの数値
+     * @param   curve_name : オートメーションカーブの名前を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_curvename(const unsigned int& curve_index, std::string& curve_name);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブの値を取得する。
+     * @param   curve_index : オートメーションカーブのインデックスの数値
+     * @param   curve_value : オートーメーションカーブの値を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_curvevalue(const unsigned int& curve_index, GsCurveValue& curve_value);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブの値を取得する。
+     * @param   curve_name : オートメーションカーブの名前への参照
+     * @param   curve_value : オートーメーションカーブの値を格納する参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_get_curvevalue(const std::string& curve_name, GsCurveValue& curve_value);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブに値を設定する。
+     * @param   curve_index : オートメーションカーブのインデックスの数値
+     * @param   curve_value : オートーメーションカーブの値への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_curvevalue(const unsigned int& curve_index, const GsCurveValue& curve_value);
+    /**************************************************************************
+     * @brief   パッチのオートメーションカーブに値を設定する。
+     * @param   curve_name : オートメーションカーブの名前への参照
+     * @param   curve_value : オートーメーションカーブの値への参照
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_set_curvevalue(const std::string& curve_name, const GsCurveValue& curve_value);
 
 private:
     static GsApiInterfaceConfig gs_config;

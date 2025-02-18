@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.4
+ * @version 1.0.5
  * @auther  ysd
  ****************************************************************/
 
@@ -36,6 +36,9 @@
 /* メタパラメータを取得するときに使用する文字列 */
 #define GS_METAVALUE_BY_INDEX       "BY_INDEX"
 #define GS_METAVALUE_BY_NAME        "BY_NAME"
+/* オートメーションカーブを取得するときに使用する文字列 */
+#define GS_CURVE_BY_INDEX           "BY_INDEX"
+#define GS_CURVE_BY_NAME            "BY_NAME"
 
 /****************************************************************
  * 構造体宣言
@@ -548,6 +551,163 @@ bool gs_api_interface::command_set_metavalue(const std::string& name, const floa
         << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_NAME
         << MESSAGE_DELIMITER_SPACE << name
         << MESSAGE_DELIMITER_SPACE << metavalue
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_get_curvescount(unsigned int& curves_count)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_CURVESCOUNT << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    curves_count = std::stoi(response);
+    return result;
+}
+
+bool gs_api_interface::command_get_curvenames(std::vector<std::string>& curve_names)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_CURVENAMES << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    string_split(response, MESSAGE_DELIMITER_COMMA, curve_names);
+    return result;
+}
+
+bool gs_api_interface::command_get_curvename(const unsigned int& curve_index, std::string& curve_name)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_CURVENAME
+        << MESSAGE_DELIMITER_SPACE << curve_index
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    curve_name = response;
+    return result;
+}
+
+bool gs_api_interface::command_get_curvevalue(const unsigned int& curve_index, GsCurveValue& curve_value)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_CURVEVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_INDEX
+        << MESSAGE_DELIMITER_SPACE << curve_index
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+
+    std::vector<std::string> curve_params;
+    response.erase(std::remove(response.begin(), response.end(), '('), response.end());
+    string_split(response, ' ', curve_params);
+    if (curve_params.size() != 3) {
+        /* 想定しているデータではない */
+        return false;
+    }
+    std::vector<std::string> point_list;
+    string_split(response, ')', point_list);
+    /* オートメーションカーブの情報をパースする */
+    for (auto point : point_list) {
+        std::vector<std::string> param_list;
+        string_split(point, ',', param_list);
+        if (param_list.size() != 2) {
+            continue;
+        }
+        GsCurvePoint curve_point;
+        curve_point.x = std::stof(param_list[0]);
+        curve_point.y = std::stof(param_list[1]);
+        curve_value.curve.push_back(curve_point);
+    }
+    curve_value.duration = std::stof(curve_params[1]);
+    curve_value.is_loop = (std::stoi(curve_params[2]) == 1) ? true : false;
+
+    return result;
+}
+
+bool gs_api_interface::command_get_curvevalue(const std::string& curve_name, GsCurveValue& curve_value)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_GET_CURVEVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_NAME
+        << MESSAGE_DELIMITER_SPACE << "\"" << curve_name << "\""
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+
+    std::vector<std::string> curve_params;
+    response.erase(std::remove(response.begin(), response.end(), '('), response.end());
+    string_split(response, ' ', curve_params);
+    if (curve_params.size() != 3) {
+        /* 想定しているデータではない */
+        return false;
+    }
+    std::vector<std::string> point_list;
+    string_split(response, ')', point_list);
+    /* オートメーションカーブの情報をパースする */
+    for (auto point : point_list) {
+        std::vector<std::string> param_list;
+        string_split(point, ',', param_list);
+        if (param_list.size() != 2) {
+            continue;
+        }
+        GsCurvePoint curve_point;
+        curve_point.x = std::stof(param_list[0]);
+        curve_point.y = std::stof(param_list[1]);
+        curve_value.curve.push_back(curve_point);
+    }
+    curve_value.duration = std::stof(curve_params[1]);
+    curve_value.is_loop = (std::stoi(curve_params[2]) == 1) ? true : false;
+
+    return result;
+}
+
+bool gs_api_interface::command_set_curvevalue(const unsigned int& curve_index, const GsCurveValue& curve_value)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_CURVEVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_INDEX
+        << MESSAGE_DELIMITER_SPACE << curve_index
+        << MESSAGE_DELIMITER_SPACE << "\"";
+    for (auto it = curve_value.curve.begin(); it != curve_value.curve.end(); ++it) {
+        if (it != curve_value.curve.begin()) {
+            oss << ',';
+        }
+        oss << '(' << it->x << ',' << it->y << ')';
+    }
+    oss << "\""
+        << MESSAGE_DELIMITER_SPACE << curve_value.duration
+        << MESSAGE_DELIMITER_SPACE << ((curve_value.is_loop == true) ? 1 : 0)
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_set_curvevalue(const std::string& curve_name, const GsCurveValue& curve_value)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_SET_CURVEVALUE
+        << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_NAME
+        << MESSAGE_DELIMITER_SPACE << "\"" << curve_name << "\""
+        << MESSAGE_DELIMITER_SPACE << "\"";
+    for (auto it = curve_value.curve.begin(); it != curve_value.curve.end(); ++it) {
+        if (it != curve_value.curve.begin()) {
+            oss << ',';
+        }
+        oss << '(' << it->x << ',' << it->y << ')';
+    }
+    oss << "\""
+        << MESSAGE_DELIMITER_SPACE << curve_value.duration
+        << MESSAGE_DELIMITER_SPACE << ((curve_value.is_loop == true) ? 1 : 0)
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
