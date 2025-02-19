@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.5
+ * @version 1.0.6
  * @auther  ysd
  ****************************************************************/
 
@@ -708,6 +708,71 @@ bool gs_api_interface::command_set_curvevalue(const std::string& curve_name, con
     oss << "\""
         << MESSAGE_DELIMITER_SPACE << curve_value.duration
         << MESSAGE_DELIMITER_SPACE << ((curve_value.is_loop == true) ? 1 : 0)
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_play()
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_PLAY << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_stop()
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_STOP << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_is_playing(bool& is_playing)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_IS_PLAYING << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    is_playing = (std::stoi(response) == 1) ? true : false;
+    return result;
+}
+
+bool gs_api_interface::command_is_infinite(bool& is_infinite)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_IS_INFINITE << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    is_infinite = (std::stoi(response) == 1) ? true : false;
+    return result;
+}
+
+bool gs_api_interface::command_is_randomized(bool& is_randomized)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_IS_RANDOMIZED << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    is_randomized = (std::stoi(response) == 1) ? true : false;
+    return result;
+}
+
+bool gs_api_interface::command_enable_events(const bool is_notification)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_ENABLE_EVENTS
+        << MESSAGE_DELIMITER_SPACE << ((is_notification == true) ? 1 : 0)
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
