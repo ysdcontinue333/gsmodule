@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.4
+ * @version 1.0.5
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -51,12 +51,12 @@
 #define GS_API_SET_CURVEVALUE           "set_curvevalue"        /* 現在のパッチのオートメーションカーブに値を設定する。 */
 
 /* APIジャンル: 再生 */
-#define GS_API_PLAY                     "play"
-#define GS_API_STOP                     "stop"
-#define GS_API_IS_PLAYING               "is_playing"
-#define GS_API_IS_INFINITE              "is_infinite"
-#define GS_API_IS_RANDOMIZED            "is_randomized"
-#define GS_API_ENABLE_EVENTS            "enable_events"
+#define GS_API_PLAY                     "play"                  /* 現在のパッチを再生する。 */
+#define GS_API_STOP                     "stop"                  /* 現在のパッチを停止する。 */
+#define GS_API_IS_PLAYING               "is_playing"            /* 現在のパッチは再生中か。 */
+#define GS_API_IS_INFINITE              "is_infinite"           /* 現在のパッチは再生時間が無限か。 */
+#define GS_API_IS_RANDOMIZED            "is_randomized"         /* 現在のパッチはランダム性があるか。 */
+#define GS_API_ENABLE_EVENTS            "enable_events"         /* ツールの合成イベントの通知を設定する。 */
 
 /* APIジャンル: ユーザーインタフェース */
 #define GS_API_WINDOW_BACK              "window_back"

@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.5
+ * @version 1.0.6
  * @auther  ysd
  ****************************************************************/
 
@@ -443,5 +443,49 @@ TEST_F(GS_API_TEST, TEST_GS_API_SET_CURVEVALUE_BY_NAME) {
     curve_value.duration = 0.67f;
     curve_value.is_loop = true;
     const bool res = gs_api_interface::command_set_curvevalue(curve_name, curve_value);
+    EXPECT_EQ(res, true);
+}
+
+/* パッチを再生する */
+TEST_F(GS_API_TEST, TEST_GS_API_PLAY) {
+    const bool res = gs_api_interface::command_play();
+    EXPECT_EQ(res, true);
+}
+
+/* パッチを停止する */
+TEST_F(GS_API_TEST, TEST_GS_API_STOP) {
+    const bool res = gs_api_interface::command_stop();
+    EXPECT_EQ(res, true);
+}
+
+/* パッチが再生中か */
+TEST_F(GS_API_TEST, TEST_GS_API_IS_PLAYING) {
+    bool is_playing;
+    const bool res = gs_api_interface::command_is_playing(is_playing);
+    std::cout << is_playing << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* パッチはループ再生されるか */
+TEST_F(GS_API_TEST, TEST_GS_API_IS_INFINITE) {
+    bool is_inifinite;
+    const bool res = gs_api_interface::command_is_infinite(is_inifinite);
+    std::cout << is_inifinite << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* パッチはランダム性があるか */
+TEST_F(GS_API_TEST, TEST_GS_API_IS_RANDOMIZED) {
+    bool is_randomized;
+    const bool res = gs_api_interface::command_is_randomized(is_randomized);
+    std::cout << is_randomized << std::endl;
+    EXPECT_EQ(res, true);
+}
+
+/* ツールのイベント発火を有効にする */
+TEST_F(GS_API_TEST, TEST_GS_API_ENABLE_EVENTS) {
+    const bool flag = true;
+    std::string event_name;
+    const bool res = gs_api_interface::command_enable_events(flag);
     EXPECT_EQ(res, true);
 }
