@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.6
+ * @version 1.0.7
  * @auther  ysd
  ****************************************************************/
 
@@ -57,6 +57,13 @@ GsApiInterfaceConfig gs_api_interface::gs_config;
  * 関数宣言
  ****************************************************************/
 static bool string_split(const std::string& commands, const char delimiter, std::vector<std::string>& command_list);
+static bool enum_to_string(const GsWindowButton type, std::string& text);
+static bool enum_to_string(const GsDataType type, std::string& text);
+static bool enum_to_string(const GsNumberSubType type, std::string& text);
+static bool enum_to_string(const GsStringSubType type, std::string& text);
+static bool enum_to_string(const GsEnumSubType type, std::string& text);
+static bool enum_to_string(const GsLabelSubType type, std::string& text);
+static bool enum_to_string(const GsLabelAlignment type, std::string& text);
 
 /****************************************************************
  * 関数定義
@@ -67,6 +74,135 @@ bool string_split(const std::string& commands, const char delimiter, std::vector
     std::string item;
     while (std::getline(ss, item, delimiter)) {
         command_list.push_back(item);
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsWindowButton type, std::string& text)
+{
+    switch (type) {
+    case GS_WINDOW_BUTTON_OK:
+        text = "OK";
+        break;
+    case GS_WINDOW_BUTTON_OK_CANCEL:
+        text = "OK_CANCEL";
+        break;
+    case GS_WINDOW_BUTTON_YES_NO:
+        text = "YES_NO";
+        break;
+    case GS_WINDOW_BUTTON_RETRY_EXIT:
+        text = "RETRY_EXIT";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsDataType type, std::string& text)
+{
+    switch (type) {
+    case GS_DATA_TYPE_NUMBER:
+        text = "NUMBER";
+        break;
+    case GS_DATA_TYPE_BOOL:
+        text = "BOOL";
+        break;
+    case GS_DATA_TYPE_STRING:
+        text = "STRING";
+        break;
+    case GS_DATA_TYPE_ENUM:
+        text = "ENUM";
+        break;
+    case GS_DATA_TYPE_LABEL:
+        text = "LABEL";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsNumberSubType type, std::string& text)
+{
+    switch (type) {
+    case GS_NUMBER_SUB_TYPE_INTEGER:
+        text = "INTEGER";
+        break;
+    case GS_NUMBER_SUB_TYPE_FLOAT:
+        text = "FLOAT";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsStringSubType type, std::string& text)
+{
+    switch (type) {
+    case GS_STRING_SUB_TYPE_NORMAL:
+        text = "NORMAL";
+        break;
+    case GS_STRING_SUB_TYPE_FILELOAD:
+        text = "FILELOAD";
+        break;
+    case GS_STRING_SUB_TYPE_FILESAVE:
+        text = "FILESAVE";
+        break;
+    case GS_STRING_SUB_TYPE_FOLDER:
+        text = "FOLDER";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsEnumSubType type, std::string& text)
+{
+    switch (type) {
+    case GS_ENUM_SUB_TYPE_LIST:
+        text = "LIST";
+        break;
+    case GS_ENUM_SUB_TYPE_COMBO:
+        text = "COMBO";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsLabelSubType type, std::string& text)
+{
+    switch (type) {
+    case GS_LABEL_SUB_TYPE_TEXT:
+        text = "TEXT";
+        break;
+    case GS_LABEL_SUB_TYPE_HEADER:
+        text = "HEADER";
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+static bool enum_to_string(const GsLabelAlignment type, std::string& text)
+{
+    switch (type) {
+    case GS_LABEL_SUB_ALIGNMENT_LEFT:
+        text = "LEFT";
+        break;
+    case GS_LABEL_SUB_ALIGNMENT_RIGHT:
+        text = "RIGHT";
+        break;
+    case GS_LABEL_SUB_ALIGNMENT_CENTER:
+        text = "CENTER";
+        break;
+    default:
+        return false;
     }
     return true;
 }
@@ -773,6 +909,164 @@ bool gs_api_interface::command_enable_events(const bool is_notification)
     std::ostringstream oss;
     oss << GS_API_ENABLE_EVENTS
         << MESSAGE_DELIMITER_SPACE << ((is_notification == true) ? 1 : 0)
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_back()
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_WINDOW_BACK
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_front()
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_WINDOW_FRONT
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_message(const std::string& message, const GsWindowButton& button)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_WINDOW_MESSAGE
+        << MESSAGE_DELIMITER_SPACE << message;
+    std::string button_setting;
+    if (!enum_to_string(button, button_setting)) {
+        return false;
+    }
+    oss << MESSAGE_DELIMITER_SPACE << button_setting
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_parameters(const std::vector<GsParameter>& params)
+{
+    if (params.size() == 0) {
+        return false;
+    }
+
+    std::string response;
+    std::ostringstream oss;
+    std::string message;
+    oss << GS_API_WINDOW_PARAMETERS;
+    for (auto param : params) {
+        if (std::holds_alternative<GsNumber>(param)) {
+            /* 数値パラメーター {NUMBER, "Name", Type, "Unit", Min, Max, Def, Decimals} */
+            const GsNumber& gsNumber = std::get<GsNumber>(param);
+            std::string type;
+            std::string sub_type;
+            if (!enum_to_string(gsNumber.type, type)) {
+                continue;
+            }
+            if (!enum_to_string(gsNumber.sub_type, sub_type)) {
+                continue;
+            }
+            oss << MESSAGE_DELIMITER_SPACE << "{" << type 
+                << ",\""<< gsNumber.name << "\"," << sub_type << ",\""<< gsNumber.unit << "\"," 
+                << gsNumber.min_value <<  "," << gsNumber.max_value << "," << gsNumber.default_value << "," << gsNumber.decimals << "}";
+        } else if (std::holds_alternative<GsBool>(param)) {
+            /* 真偽値パラメーター {BOOL, "Name", Def} */
+            const GsBool& gsBool = std::get<GsBool>(param);
+            std::string type;
+            if (!enum_to_string(gsBool.type, type)) {
+                continue;
+            }
+            oss << MESSAGE_DELIMITER_SPACE << "{" << type 
+            <<",\"" << gsBool.name << "\"," << ((gsBool.default_value)?"TRUE":"FALSE") << "}";
+        } else if (std::holds_alternative<GsString>(param)) {
+            /* 文字列パラメーター {STRING, "Name", Type, "Def" */
+            const GsString& gsString = std::get<GsString>(param);
+            std::string type;
+            std::string sub_type;
+            if (!enum_to_string(gsString.type, type)) {
+                continue;
+            }
+            if (!enum_to_string(gsString.sub_type, sub_type)) {
+                continue;
+            }
+            oss << MESSAGE_DELIMITER_SPACE << "{" << type 
+            << ",\"" << gsString.name << "\"," << sub_type << ",\"" << gsString.default_value << "\"}";
+        } else if (std::holds_alternative<GsEnum>(param)) {
+            /* 列挙パラメーター {ENUM, "Name", Type, "[Choices]", Def} */
+            const GsEnum& gsEnum = std::get<GsEnum>(param);
+            std::string type;
+            std::string sub_type;
+            if (gsEnum.choices.size() == 0) {
+                continue;
+            }
+            if (!enum_to_string(gsEnum.type, type)) {
+                continue;
+            }
+            if (!enum_to_string(gsEnum.sub_type, sub_type)) {
+                continue;
+            }
+            oss << MESSAGE_DELIMITER_SPACE << "{" << type 
+            << ",\"" << gsEnum .name << "\"," << sub_type << ",\"";
+            for (auto it = gsEnum.choices.begin(); it != gsEnum.choices.end(); it++) {
+                if (it != gsEnum.choices.begin()) {
+                    oss << "," << MESSAGE_DELIMITER_SPACE;
+                }
+                oss << *it;
+            }
+            oss <<"\"," << gsEnum.choices.at(gsEnum.default_choice) << "}";
+        } else if (std::holds_alternative<GsLabel>(param)) {
+            /* ラベルパラメーター {LABEL, "Text", Type, Alignment} */
+            const GsLabel& gsLabel = std::get<GsLabel>(param);
+            std::string type;
+            std::string sub_type;
+            std::string alignment;
+            if (!enum_to_string(gsLabel.type, type)) {
+                continue;
+            }
+            if (!enum_to_string(gsLabel.sub_type, sub_type)) {
+                continue;
+            }
+            if (!enum_to_string(gsLabel.alignment, alignment)) {
+                continue;
+            }
+            oss << MESSAGE_DELIMITER_SPACE << "{" << type 
+            << ",\"" << gsLabel.text << "\"," << sub_type << "," << alignment << "}";
+        }
+    }
+    oss << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_rendering(const bool& show_duration, const bool& show_variations)
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_WINDOW_RENDERING
+        << MESSAGE_DELIMITER_SPACE << ((show_duration) ? 1 : 0)
+        << MESSAGE_DELIMITER_SPACE << ((show_variations) ? 1 : 0)
+        << gs_config.delimiter;
+    const std::string send_message = oss.str();
+    bool result = send_command(send_message, response);
+    return result;
+}
+
+bool gs_api_interface::command_window_test()
+{
+    std::string response;
+    std::ostringstream oss;
+    oss << GS_API_WINDOW_TEST
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
