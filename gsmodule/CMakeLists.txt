@@ -1,4 +1,7 @@
-# gsmodule library
+## @file    CMakeLists.txt
+## @brief   gsmodule library
+## @version 1.0.1
+## @auther  ysd
 
 cmake_minimum_required(VERSION 3.16)
 
@@ -14,6 +17,8 @@ add_library(${GS_MODULE} STATIC
     ./include/gspatch_element.h
     ./include/gspatch_parser.h
 )
+
+target_compile_features(${GS_MODULE} PUBLIC cxx_std_17)
 
 add_subdirectory(tinyxml2)
 
