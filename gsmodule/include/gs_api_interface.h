@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_interface.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.6
+ * @version 1.0.7
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_INTERFACE_H
@@ -12,6 +12,7 @@
  ****************************************************************/
 #include <string>
 #include <vector>
+#include <variant>
 
 /****************************************************************
  * プリプロセッサ定義
@@ -20,6 +21,10 @@
 #define GS_API_INTERFACE_DEFAULT_IP_ADDRESS     "127.0.0.1"     /* デフォルトのIPアドレス */
 #define GS_API_INTERFACE_DEFAULT_CODEC          "UTF-8"         /* デフォルトの圧縮形式 */
 #define GS_API_INTERFACE_DEFAULT_DELIMITER      "\r"            /* デフォルトのデリミタ(10進コードで13) */
+
+/****************************************************************
+ * 構造体宣言
+ ****************************************************************/
 
 /* ツールとの通信に使用されるパラメータの構造体 */
 typedef struct GsApiInterfaceConfigStruct {
@@ -49,6 +54,103 @@ typedef struct GsCurveValueStruct {
     float                       duration = 0;                                   /* 持続時間 [0-60] */
     bool                        is_loop = false;                                /* ループ情報 [0,1] */
 } GsCurveValue;
+
+/* メッセージボックスのボタン */
+typedef enum GsWindowButtonEnum {
+    GS_WINDOW_BUTTON_OK = 0,                                                    /* OK */
+    GS_WINDOW_BUTTON_OK_CANCEL,                                                 /* OK_CANCEL */
+    GS_WINDOW_BUTTON_YES_NO,                                                    /* YES_NO */
+    GS_WINDOW_BUTTON_RETRY_EXIT,                                                /* RETRY_EXIT */
+} GsWindowButton;
+
+/* ダイアログで選択できるデータ型 */
+typedef enum GsDataTypeEnum {
+    GS_DATA_TYPE_NUMBER = 0,                                                    /* NUMBER */
+    GS_DATA_TYPE_BOOL,                                                          /* BOOL */
+    GS_DATA_TYPE_STRING,                                                        /* STRING */
+    GS_DATA_TYPE_ENUM,                                                          /* ENUM */
+    GS_DATA_TYPE_LABEL,                                                         /* LABEL */
+} GsDataType;
+
+/* 数値パラメーターのサブタイプ */
+typedef enum GsNumberSubTypeEnum {
+    GS_NUMBER_SUB_TYPE_INTEGER = 0,                                             /* INTEGER */
+    GS_NUMBER_SUB_TYPE_FLOAT                                                    /* FLOAT */
+} GsNumberSubType;
+
+/* 文字列パラメーターのサブタイプ */
+typedef enum GsStringSubTypeEnum {
+    GS_STRING_SUB_TYPE_NORMAL = 0,                                              /* NORMAL */
+    GS_STRING_SUB_TYPE_FILELOAD,                                                /* FILELOAD */
+    GS_STRING_SUB_TYPE_FILESAVE,                                                /* FILESAVE */
+    GS_STRING_SUB_TYPE_FOLDER                                                   /* FOLDER */
+} GsStringSubType;
+
+/* 列挙パラメーターのサブタイプ */
+typedef enum GsEnumSubTypeEnum {
+    GS_ENUM_SUB_TYPE_LIST = 0,                                                  /* LIST */
+    GS_ENUM_SUB_TYPE_COMBO                                                      /* COMBO */
+} GsEnumSubType;
+
+/* ラベルパラメーターのサブタイプ */
+typedef enum GsLabelSubTypeEnum {
+    GS_LABEL_SUB_TYPE_TEXT = 0,                                                 /* TEXT */
+    GS_LABEL_SUB_TYPE_HEADER                                                    /* HEADER */
+} GsLabelSubType;
+
+/* ラベルパラメーターの水平方向の配置 */
+typedef enum GsLabelAlignmentEnum {
+    GS_LABEL_SUB_ALIGNMENT_LEFT = 0,                                            /* LEFT */
+    GS_LABEL_SUB_ALIGNMENT_RIGHT,                                               /* RIGHT */
+    GS_LABEL_SUB_ALIGNMENT_CENTER                                               /* CENTER */
+} GsLabelAlignment;
+
+/* 数値パラメーターのフィールド */
+typedef struct GsNumberStruct {
+    const GsDataType type = GS_DATA_TYPE_NUMBER;                                /* タイプ */
+    GsNumberSubType sub_type = GS_NUMBER_SUB_TYPE_INTEGER;                      /* サブタイプ */
+    std::string name = "";                                                      /* 名前 */
+    std::string unit = "";                                                      /* 単位 */
+    float min_value = 0.f;                                                      /* 最小値 */
+    float max_value = 1.f;                                                      /* 最大値 */
+    float default_value = 0;                                                    /* デフォルト値 */
+    unsigned int decimals = 1;                                                  /* 小数点以下の桁数 */
+} GsNumber;
+
+/* 真偽値パラメーターのフィールド */
+typedef struct GsBoolStruct {
+    const GsDataType type = GS_DATA_TYPE_BOOL;                                  /* タイプ */
+    std::string name = "";                                                      /* 名前 */
+    bool default_value = true;                                                  /* デフォルト値 */
+} GsBool;
+
+/* 文字列パラメーターのフィールド */
+typedef struct GsStringStruct {
+    const GsDataType type = GS_DATA_TYPE_STRING;                                /* タイプ */
+    GsStringSubType sub_type = GS_STRING_SUB_TYPE_NORMAL;                       /* サブタイプ */
+    std::string name = "";                                                      /* 名前 */
+    std::string default_value = "";                                             /* デフォルト値 */
+} GsString;
+
+/* 列挙パラメーターのフィールド */
+typedef struct GsEnumStruct {
+    const GsDataType type = GS_DATA_TYPE_ENUM;                                  /* タイプ */
+    GsEnumSubType sub_type = GS_ENUM_SUB_TYPE_LIST;                             /* サブタイプ */
+    std::string name = "";                                                      /* 名前 */
+    std::vector<std::string> choices;                                           /* 選択肢のリスト */
+    unsigned int default_choice = 0;                                            /* デフォルト値 */
+} GsEnum;
+
+/* ラベルパラメーターのフィールド */
+typedef struct GsLabelStruct {
+    const GsDataType type = GS_DATA_TYPE_LABEL;                                 /* タイプ */
+    GsLabelSubType sub_type = GS_LABEL_SUB_TYPE_TEXT;                           /* サブタイプ */
+    GsLabelAlignment alignment = GS_LABEL_SUB_ALIGNMENT_LEFT;                   /* 水平方向の配置 */
+    std::string text = "";                                                      /* テキスト */
+} GsLabel;
+
+/* パラメーターの汎用的なデータ型 */
+typedef std::variant<GsNumber, GsBool, GsString, GsEnum, GsLabel> GsParameter;
 
 /****************************************************************
  * クラス宣言
@@ -350,6 +452,41 @@ public:
      * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
      **************************************************************************/
     static bool command_enable_events(const bool is_notification);
+
+    /**************************************************************************
+     * @brief   
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_back();
+    /**************************************************************************
+     * @brief
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_front();
+    /**************************************************************************
+     * @brief
+     * @param   XXX :　
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_message(const std::string& message, const GsWindowButton& button);
+    /**************************************************************************
+     * @brief
+     * @param   XXX :　
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_parameters(const std::vector<GsParameter>& params);
+    /**************************************************************************
+     * @brief
+     * @param   XXX :　
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_rendering(const bool& show_duration, const bool& show_variations);
+    /**************************************************************************
+     * @brief
+     * @return  ツールから応答があればtrueを返す。それ以外はfalseを返す。
+     **************************************************************************/
+    static bool command_window_test();
+
 
 private:
     static GsApiInterfaceConfig gs_config;

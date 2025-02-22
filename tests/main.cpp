@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.6
+ * @version 1.0.7
  * @auther  ysd
  ****************************************************************/
 
@@ -489,3 +489,61 @@ TEST_F(GS_API_TEST, TEST_GS_API_ENABLE_EVENTS) {
     const bool res = gs_api_interface::command_enable_events(flag);
     EXPECT_EQ(res, true);
 }
+
+/* ツールを背面に移動する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_BACK) {
+    const bool res = gs_api_interface::command_window_back();
+    EXPECT_EQ(res, true);
+};
+
+/* ツールを前面に移動する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_FRONT) {
+    const bool res = gs_api_interface::command_window_front();
+    EXPECT_EQ(res, true);
+};
+
+/* ツールでメッセージボックスを表示する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_MESSAGE) {
+    const std::string message = "MessageBox";
+    const GsWindowButton button = GS_WINDOW_BUTTON_OK;
+    const bool res = gs_api_interface::command_window_message(message, button);
+    EXPECT_EQ(res, true);
+};
+
+/* ツールでパラメータ設定のダイアログを表示する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_PARAMETERS) {
+    std::vector<GsParameter> params;
+    GsNumber param01;
+    param01.name = "Number";
+    params.push_back(param01);
+    GsBool param02;
+    param02.name = "Bool";
+    params.push_back(param02);
+    GsString param03;
+    param03.name = "String";
+    params.push_back(param03);
+    GsEnum param04;
+    param04.name = "Enum";
+    param04.choices = {"Item01", "Item02"};
+    params.push_back(param04);
+    GsLabel param05;
+    param05.text = "Label";
+    params.push_back(param05);
+
+    const bool res = gs_api_interface::command_window_parameters(params);
+    EXPECT_EQ(res, true);
+};
+
+/* ツールでレンダリング設定のダイアログを表示する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_RENDERING) {
+    const bool show_duration = true;
+    const bool show_variations = true;
+    const bool res = gs_api_interface::command_window_rendering(show_duration, show_variations);
+    EXPECT_EQ(res, true);
+};
+
+/* ツールでテスト用ダイアログを表示する。 */
+TEST_F(GS_API_TEST, TEST_GS_WINDOW_TEST) {
+    const bool res = gs_api_interface::command_window_test();
+    EXPECT_EQ(res, true);
+};

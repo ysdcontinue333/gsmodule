@@ -1,7 +1,7 @@
 ﻿/****************************************************************
  * @file    gs_api_commands.h
  * @brief   GameSynth Tool APIのコマンド一覧
- * @version 1.0.5
+ * @version 1.0.6
  * @auther  ysd
  ****************************************************************/
 #ifndef GS_API_COMMANDS_H
@@ -59,11 +59,11 @@
 #define GS_API_ENABLE_EVENTS            "enable_events"         /* ツールの合成イベントの通知を設定する。 */
 
 /* APIジャンル: ユーザーインタフェース */
-#define GS_API_WINDOW_BACK              "window_back"
-#define GS_API_WINDOW_FRONT             "window_front"
-#define GS_API_WINDOW_MESSAGE           "window_message"
-#define GS_API_WINDOW_PARAMETERS        "window_parameters"
-#define GS_API_WINDOW_RENDERING         "window_rendering "
-#define GS_API_WINDOW_TEST              "window_test"
+#define GS_API_WINDOW_BACK              "window_back"           /* ツールのメインウィドウを背面に移動させる。 */
+#define GS_API_WINDOW_FRONT             "window_front"          /* ツールのメインウィドウを前面に移動させる。 */
+#define GS_API_WINDOW_MESSAGE           "window_message"        /* ツールのメッセージダイアログを表示する。 */
+#define GS_API_WINDOW_PARAMETERS        "window_parameters"     /* ツールのパラメーター設定ダイアログを表示する。 */
+#define GS_API_WINDOW_RENDERING         "window_rendering "     /* ツールのレンダリング設定ダイアログを表示する。 */
+#define GS_API_WINDOW_TEST              "window_test"           /* ツールのテスト用ダイアログを表示する。*/
 
 #endif /* GS_API_COMMANDS_H */
