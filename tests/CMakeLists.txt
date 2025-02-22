@@ -1,4 +1,7 @@
-# gsmodule test
+## @file    CMakeLists.txt
+## @brief   gsmodule test
+## @version 1.0.1
+## @auther  ysd
 
 cmake_minimum_required(VERSION 3.16)
 
@@ -9,6 +12,8 @@ endif()
 add_executable(${GS_TEST} 
     ./main.cpp
 )
+
+target_compile_features(${GS_TEST} PUBLIC cxx_std_17)
 
 add_subdirectory(googletest)
 

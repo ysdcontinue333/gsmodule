@@ -1,4 +1,7 @@
-# gsmodule project
+## @file    CMakeLists.txt
+## @brief   gsmodule project
+## @version 1.0.0
+## @auther  ysd
 
 cmake_minimum_required(VERSION 3.16)
 
