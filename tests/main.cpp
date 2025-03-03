@@ -1,15 +1,15 @@
 ﻿/****************************************************************
  * @file    main.cpp
  * @brief   gsmoduleのテスト
- * @version 1.0.7
+ * @version 1.0.8
  * @auther  ysd
  ****************************************************************/
 
 /****************************************************************
  * インクルード
  ****************************************************************/
-#include <gs_api_commands.h>
-#include <gs_api_interface.h>
+#include <gsapi_commands.h>
+#include <gsapi_client.h>
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -55,18 +55,18 @@ int main(int argc, char** argv) {
 /**************************************************************************
  * @brief   GoogleTestによる機能テスト
  **************************************************************************/
-class GS_API_TEST : public testing::Test {
+class GSAPI_TEST : public testing::Test {
 protected:
-    GS_API_TEST() {
+    GSAPI_TEST() {
     }
-    virtual ~GS_API_TEST() {
+    virtual ~GSAPI_TEST() {
     }
 
     /* 最初のテスト前に実行 */
     static void SetUpTestCase() {
         bool res;
-        GsApiInterfaceConfig gs_config;
-        res = gs_api_interface::get_default_config(gs_config);
+        GsApiClientConfig gs_config;
+        res = gsapi_client::get_default_config(gs_config);
         EXPECT_EQ(res, true);
 #if 0
         /* GameSynth側の接続設定に合わせて変更 */
@@ -75,7 +75,7 @@ protected:
         gs_config.codec = "UTF-8";
         gs_config.delimiter = "\r";
 #endif
-        res = gs_api_interface::set_default_config(gs_config);
+        res = gsapi_client::set_default_config(gs_config);
         EXPECT_EQ(res, true);
     }
     /* 最後のテスト後に実行 */
@@ -90,32 +90,32 @@ protected:
 };
 
 /* 何らかのメッセージを送信するテスト */
-TEST_F(GS_API_TEST, TEST_SEND_COMMAND) {
+TEST_F(GSAPI_TEST, TEST_SEND_COMMAND) {
     const std::string command = "get_version";
     std::string response = "";
-    const bool res = gs_api_interface::send_command(command, response);
+    const bool res = gsapi_client::send_command(command, response);
     std::cout << response << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ツールと通信可能か */
-TEST_F(GS_API_TEST, TEST_GS_CONNECT) {
-    const bool res = gs_api_interface::is_connect();
+TEST_F(GSAPI_TEST, TEST_GS_CONNECT) {
+    const bool res = gsapi_client::is_connect();
     EXPECT_EQ(res, true);
 };
 
 /* ツールのバージョン */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_VERSION) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_VERSION) {
     std::string version;
-    const bool res = gs_api_interface::command_get_version(version);
+    const bool res = gsapi_client::command_get_version(version);
     std::cout << version << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ツールで使用可能なコマンドのリスト */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_COMMANDS) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_COMMANDS) {
     std::vector<std::string> commmand_list;
-    const bool res = gs_api_interface::command_get_commands(commmand_list);
+    const bool res = gsapi_client::command_get_commands(commmand_list);
     for (auto command : commmand_list) {
         std::cout << command << std::endl;
     }
@@ -123,9 +123,9 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_COMMANDS) {
 };
 
 /* ツールで使用可能なモデルのリスト */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_MODELS) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_MODELS) {
     std::vector<std::string> model_list;
-    const bool res = gs_api_interface::command_get_models(model_list);
+    const bool res = gsapi_client::command_get_models(model_list);
     for (auto model : model_list) {
         std::cout << model << std::endl;
     }
@@ -133,35 +133,35 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_MODELS) {
 };
 
 /* ツールのシステムパス */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_PATH_) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_PATH_) {
     const std::string path_name = GS_PATH_PATCH_FOLDER;
     std::string path_value;
-    const bool res = gs_api_interface::command_get_path(path_name, path_value);
+    const bool res = gsapi_client::command_get_path(path_name, path_value);
     std::cout << path_value << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ツールのサンプリング周波数を取得 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_SAMPLERATE) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_SAMPLERATE) {
     std::string samplerate;
-    const bool res = gs_api_interface::command_get_samplerate(samplerate);
+    const bool res = gsapi_client::command_get_samplerate(samplerate);
     std::cout << samplerate << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ツールにサンプリング周波数を設定 */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_SAMPLERATE) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_SAMPLERATE) {
     const std::string samplerate = GS_SAMPLERATE_48000;
-    const bool res = gs_api_interface::command_set_samplerate(samplerate);
+    const bool res = gsapi_client::command_set_samplerate(samplerate);
     std::cout << samplerate << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* リポジトリを検索(パッチ名) */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_NAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_PATCHNAMES_NAME) {
     const std::string text = "Magic"; /* 検索する文字列 */
     std::vector<std::string> patch_list;
-    const bool res = gs_api_interface::command_query_patchnames(text, true, false, false, patch_list);
+    const bool res = gsapi_client::command_query_patchnames(text, true, false, false, patch_list);
     for (auto patch_name : patch_list) {
         std::cout << patch_name << std::endl;
     }
@@ -169,10 +169,10 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_NAME) {
 };
 
 /* リポジトリを検索(カテゴリ) */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_CATEGORY) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_PATCHNAMES_CATEGORY) {
     const std::string text = "Magic"; /* 検索する文字列 */
     std::vector<std::string> patch_list;
-    const bool res = gs_api_interface::command_query_patchnames(text, false, true, false, patch_list);
+    const bool res = gsapi_client::command_query_patchnames(text, false, true, false, patch_list);
     for (auto patch_name : patch_list) {
         std::cout << patch_name << std::endl;
     }
@@ -180,10 +180,10 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_CATEGORY) {
 };
 
 /* リポジトリを検索(タグ) */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_TAGS) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_PATCHNAMES_TAGS) {
     const std::string text = "Magic"; /* 検索する文字列 */
     std::vector<std::string> patch_list;
-    const bool res = gs_api_interface::command_query_patchnames(text, false, false, true, patch_list);
+    const bool res = gsapi_client::command_query_patchnames(text, false, false, true, patch_list);
     for (auto patch_name : patch_list) {
         std::cout << patch_name << std::endl;
     }
@@ -191,16 +191,16 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCHNAMES_TAGS) {
 };
 
 /* リポジトリからパッチを取得してツール上で読み込む */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_PATCH) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_PATCH) {
     const std::string text = "Ascent"; /* 検索する文字列 */
-    const bool res = gs_api_interface::command_query_patch(text);
+    const bool res = gsapi_client::command_query_patch(text);
     EXPECT_EQ(res, true);
 };
 
 /* リポジトリで使用可能なカテゴリのリスト */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_CATEGORIES) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_CATEGORIES) {
     std::vector<std::string> category_list;
-    const bool res = gs_api_interface::command_query_categories(category_list);
+    const bool res = gsapi_client::command_query_categories(category_list);
     for (auto category : category_list) {
         std::cout << category << std::endl;
     }
@@ -208,9 +208,9 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_CATEGORIES) {
 };
 
 /* リポジトリで使用可能なタグのリスト */
-TEST_F(GS_API_TEST, TEST_GS_API_QUERY_TAGS) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_QUERY_TAGS) {
     std::vector<std::string> tag_list;
-    const bool res = gs_api_interface::command_query_categories(tag_list);
+    const bool res = gsapi_client::command_query_categories(tag_list);
     for (auto category : tag_list) {
         std::cout << category << std::endl;
     }
@@ -218,83 +218,83 @@ TEST_F(GS_API_TEST, TEST_GS_API_QUERY_TAGS) {
 };
 
 /* パッチを保存する */
-TEST_F(GS_API_TEST, TEST_GS_API_SAVE_PATCH) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SAVE_PATCH) {
     {
         /* パッチを保存するため、リポジトリから取得 */
         const std::string text = "Lightsabers"; /* 検索する文字列 */
-        const bool res = gs_api_interface::command_query_patch(text);
+        const bool res = gsapi_client::command_query_patch(text);
         EXPECT_EQ(res, true);
     }
     std::ostringstream oss;
     oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_SAVE_FILE_NAME;
     std::string file_path = oss.str();
-    const bool res = gs_api_interface::command_save_patch(file_path);
+    const bool res = gsapi_client::command_save_patch(file_path);
     EXPECT_EQ(res, true);
 };
 
 /* パッチを読み込む */
-TEST_F(GS_API_TEST, TEST_GS_API_LOAD_PATCH) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_LOAD_PATCH) {
     {
         /* パッチが切り替わることを確認するため、リポジトリから取得 */
         const std::string text = "Ascent"; /* 検索する文字列 */
-        const bool res = gs_api_interface::command_query_patch(text);
+        const bool res = gsapi_client::command_query_patch(text);
         EXPECT_EQ(res, true);
     }
     std::ostringstream oss;
     oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_LOAD_FILE_NAME;
     std::string file_path = oss.str();
-    const bool res = gs_api_interface::command_load_patch(file_path);
+    const bool res = gsapi_client::command_load_patch(file_path);
     EXPECT_EQ(res, true);
 };
 
 /* パッチを出力する */
-TEST_F(GS_API_TEST, TEST_GS_API_RENDER_PATCH) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_RENDER_PATCH) {
     std::ostringstream oss;
     oss << CMAKE_TEST_SOURCE_DIR << "/resources/" << TEST_RENDER_FILE_NAME;
     std::string file_path = oss.str();
     const unsigned int depth = 16;
     const unsigned int channel = 1;
     const unsigned int duration = 10;
-    const bool res = gs_api_interface::command_render_patch(file_path, depth, channel, duration);
+    const bool res = gsapi_client::command_render_patch(file_path, depth, channel, duration);
     EXPECT_EQ(res, true);
 };
 
 /* 現在のモデル名を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_MODELNAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_MODELNAME) {
     std::string model_name;
-    const bool res = gs_api_interface::command_get_modelname(model_name);
+    const bool res = gsapi_client::command_get_modelname(model_name);
     std::cout << model_name << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* 現在のパッチ名を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_PATCHNAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_PATCHNAME) {
     std::string patch_name;
-    const bool res = gs_api_interface::command_get_patchname(patch_name);
+    const bool res = gsapi_client::command_get_patchname(patch_name);
     std::cout << patch_name << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ランダムバリエーションを取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_VARIATION) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_VARIATION) {
     float variation;
-    const bool res = gs_api_interface::command_get_variation(variation);
+    const bool res = gsapi_client::command_get_variation(variation);
     std::cout << variation << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* ランダムバリエーションを設定する */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_VARIATION) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_VARIATION) {
     const float variation = 76.54f;
-    const bool res = gs_api_interface::command_set_variation(variation);
+    const bool res = gsapi_client::command_set_variation(variation);
     std::cout << variation << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* スケッチパッドの曲線の情報を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_DRAWING) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_DRAWING) {
     std::vector<GsDrawingData> drawing_data;
-    const bool res = gs_api_interface::command_get_drawing(0, drawing_data);
+    const bool res = gsapi_client::command_get_drawing(0, drawing_data);
     for (auto point : drawing_data) {
         std::cout << '(' << point.t << ',' << point.x << ',' << point.y << ',' << point.p << ')' << ',';
     }
@@ -303,86 +303,86 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_DRAWING) {
 };
 
 /* スケッチパッドに曲線の情報を設定する */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_DRAWING) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_DRAWING) {
     const std::vector<GsDrawingData> drawing_data = {
         {0.f, 0.f, 0.f, 0.f},
         {0.5f, 0.5f, 0.5f, 1.f}
     };
-    const bool res = gs_api_interface::command_set_drawing(drawing_data);
+    const bool res = gsapi_client::command_set_drawing(drawing_data);
     EXPECT_EQ(res, true);
 };
 
 /* メタパラメータの数を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_METACOUNT) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_METACOUNT) {
     unsigned int meta_count;
-    const bool res = gs_api_interface::command_get_metacount(meta_count);
+    const bool res = gsapi_client::command_get_metacount(meta_count);
     std::cout << meta_count << std::endl;
     EXPECT_EQ(res, true);
 };
 /* メタパラメータ名のリストを取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_METNAMES) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_METNAMES) {
     std::vector<std::string> meta_names;
-    const bool res = gs_api_interface::command_get_metanames(meta_names);
+    const bool res = gsapi_client::command_get_metanames(meta_names);
     for (auto patch_name : meta_names) {
         std::cout << patch_name << std::endl;
     }
     EXPECT_EQ(res, true);
 };
 /* インデックスで指定したメタパラメータの名前を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_METANAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_METANAME) {
     const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
     std::string meta_name;
-    const bool res = gs_api_interface::command_get_metaname(index, meta_name);
+    const bool res = gsapi_client::command_get_metaname(index, meta_name);
     std::cout << meta_name << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* インデックスで指定したメタパラメータの値を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_METAVALUE_BY_INDEX) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_METAVALUE_BY_INDEX) {
     const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
     float meta_value;
-    const bool res = gs_api_interface::command_get_metavalue(index, meta_value);
+    const bool res = gsapi_client::command_get_metavalue(index, meta_value);
     std::cout << meta_value << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* 名前で指定したメタパラメータの値を取得する */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_METAVALUE_NAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_METAVALUE_NAME) {
     const std::string name = "meta_param_01"; /* パッチで定義されているメタパラメータ名を指定 */
     float meta_value;
-    const bool res = gs_api_interface::command_get_metavalue(name, meta_value);
+    const bool res = gsapi_client::command_get_metavalue(name, meta_value);
     std::cout << meta_value << std::endl;
     EXPECT_EQ(res, true);
 };
 
 /* インデックスで指定したメタパラメータに値を設定する */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_METAVALUE_BY_INDEX) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_METAVALUE_BY_INDEX) {
     const unsigned int index = 0; /* パッチで定義されているメタパラメータの番号 */
     float meta_value = 0.67f;
-    const bool res = gs_api_interface::command_set_metavalue(index, meta_value);
+    const bool res = gsapi_client::command_set_metavalue(index, meta_value);
     EXPECT_EQ(res, true);
 };
 
 /* 名前で指定したメタパラメータに値を設定する */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_METAVALUE_BY_NAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_METAVALUE_BY_NAME) {
     const std::string name = "meta_param_01"; /* パッチで定義されているメタパラメータ名を指定 */
     const float meta_value = 0.78f;
-    const bool res = gs_api_interface::command_set_metavalue(name, meta_value);
+    const bool res = gsapi_client::command_set_metavalue(name, meta_value);
     EXPECT_EQ(res, true);
 };
 
 /* オートメーションカーブ値を取得する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVECOUNT) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_CURVECOUNT) {
     unsigned int curve_count = 0;
-    const bool res = gs_api_interface::command_get_curvescount(curve_count);
+    const bool res = gsapi_client::command_get_curvescount(curve_count);
     std::cout << curve_count << std::endl;
     EXPECT_EQ(res, true);
 }
 
 /* オートメーションカーブ名のリストを取得する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVENAMES) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_CURVENAMES) {
     std::vector<std::string> curve_names;
-    const bool res = gs_api_interface::command_get_curvenames(curve_names);
+    const bool res = gsapi_client::command_get_curvenames(curve_names);
     for (auto curve_name : curve_names) {
         std::cout << curve_name << std::endl;
     }
@@ -390,19 +390,19 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVENAMES) {
 }
 
 /* インデックスで指定したオートメーションカーブの名前を取得する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVENAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_CURVENAME) {
     const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
     std::string curve_name;
-    const bool res = gs_api_interface::command_get_curvename(curve_index, curve_name);
+    const bool res = gsapi_client::command_get_curvename(curve_index, curve_name);
     std::cout << curve_name << std::endl;
     EXPECT_EQ(res, true);
 }
 
 /* インデックスで指定したオートメーションカーブの値を取得する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_INDEX) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_CURVEVALUE_BY_INDEX) {
     const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
     GsCurveValue curve_value;
-    const bool res = gs_api_interface::command_get_curvevalue(curve_index, curve_value);
+    const bool res = gsapi_client::command_get_curvevalue(curve_index, curve_value);
     for (auto point : curve_value.curve) {
         std::cout << '(' << point.x << ',' << point.y << ')' << std::endl;
     }
@@ -412,10 +412,10 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_INDEX) {
 }
 
 /* 名前で指定したオートメーションカーブの値を取得する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_NAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_GET_CURVEVALUE_BY_NAME) {
     const std::string curve_name = "Noise Amplitude"; /* パッチで定義されているオートメーションカーブの名前 */
     GsCurveValue curve_value;
-    const bool res = gs_api_interface::command_get_curvevalue(curve_name, curve_value);
+    const bool res = gsapi_client::command_get_curvevalue(curve_name, curve_value);
     for (auto point : curve_value.curve) {
         std::cout << '(' << point.x << ',' << point.y << ')' << std::endl;
     }
@@ -425,93 +425,93 @@ TEST_F(GS_API_TEST, TEST_GS_API_GET_CURVEVALUE_BY_NAME) {
 }
 
 /* インデックスで指定したオートメーションカーブに値を設定する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_CURVEVALUE_BY_INDEX) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_CURVEVALUE_BY_INDEX) {
     const unsigned int curve_index = 0; /* パッチで定義されているオートメーションカーブの番号 */
     GsCurveValue curve_value;
     curve_value.curve = { {0,0}, {1,1} };
     curve_value.duration = 0.56f;
     curve_value.is_loop = false;
-    const bool res = gs_api_interface::command_set_curvevalue(curve_index, curve_value);
+    const bool res = gsapi_client::command_set_curvevalue(curve_index, curve_value);
     EXPECT_EQ(res, true);
 }
 
 /* 名前で指定したオートメーションカーブに値を設定する。 */
-TEST_F(GS_API_TEST, TEST_GS_API_SET_CURVEVALUE_BY_NAME) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_SET_CURVEVALUE_BY_NAME) {
     const std::string curve_name = "Noise Amplitude"; /* パッチで定義されているオートメーションカーブの名前 */
     GsCurveValue curve_value;
     curve_value.curve = { {0,0}, {1,1} };
     curve_value.duration = 0.67f;
     curve_value.is_loop = true;
-    const bool res = gs_api_interface::command_set_curvevalue(curve_name, curve_value);
+    const bool res = gsapi_client::command_set_curvevalue(curve_name, curve_value);
     EXPECT_EQ(res, true);
 }
 
 /* パッチを再生する */
-TEST_F(GS_API_TEST, TEST_GS_API_PLAY) {
-    const bool res = gs_api_interface::command_play();
+TEST_F(GSAPI_TEST, TEST_GSAPI_PLAY) {
+    const bool res = gsapi_client::command_play();
     EXPECT_EQ(res, true);
 }
 
 /* パッチを停止する */
-TEST_F(GS_API_TEST, TEST_GS_API_STOP) {
-    const bool res = gs_api_interface::command_stop();
+TEST_F(GSAPI_TEST, TEST_GSAPI_STOP) {
+    const bool res = gsapi_client::command_stop();
     EXPECT_EQ(res, true);
 }
 
 /* パッチが再生中か */
-TEST_F(GS_API_TEST, TEST_GS_API_IS_PLAYING) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_IS_PLAYING) {
     bool is_playing;
-    const bool res = gs_api_interface::command_is_playing(is_playing);
+    const bool res = gsapi_client::command_is_playing(is_playing);
     std::cout << is_playing << std::endl;
     EXPECT_EQ(res, true);
 }
 
 /* パッチはループ再生されるか */
-TEST_F(GS_API_TEST, TEST_GS_API_IS_INFINITE) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_IS_INFINITE) {
     bool is_inifinite;
-    const bool res = gs_api_interface::command_is_infinite(is_inifinite);
+    const bool res = gsapi_client::command_is_infinite(is_inifinite);
     std::cout << is_inifinite << std::endl;
     EXPECT_EQ(res, true);
 }
 
 /* パッチはランダム性があるか */
-TEST_F(GS_API_TEST, TEST_GS_API_IS_RANDOMIZED) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_IS_RANDOMIZED) {
     bool is_randomized;
-    const bool res = gs_api_interface::command_is_randomized(is_randomized);
+    const bool res = gsapi_client::command_is_randomized(is_randomized);
     std::cout << is_randomized << std::endl;
     EXPECT_EQ(res, true);
 }
 
 /* ツールのイベント発火を有効にする */
-TEST_F(GS_API_TEST, TEST_GS_API_ENABLE_EVENTS) {
+TEST_F(GSAPI_TEST, TEST_GSAPI_ENABLE_EVENTS) {
     const bool flag = true;
     std::string event_name;
-    const bool res = gs_api_interface::command_enable_events(flag);
+    const bool res = gsapi_client::command_enable_events(flag);
     EXPECT_EQ(res, true);
 }
 
 /* ツールを背面に移動する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_BACK) {
-    const bool res = gs_api_interface::command_window_back();
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_BACK) {
+    const bool res = gsapi_client::command_window_back();
     EXPECT_EQ(res, true);
 };
 
 /* ツールを前面に移動する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_FRONT) {
-    const bool res = gs_api_interface::command_window_front();
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_FRONT) {
+    const bool res = gsapi_client::command_window_front();
     EXPECT_EQ(res, true);
 };
 
 /* ツールでメッセージボックスを表示する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_MESSAGE) {
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_MESSAGE) {
     const std::string message = "MessageBox";
     const GsWindowButton button = GS_WINDOW_BUTTON_OK;
-    const bool res = gs_api_interface::command_window_message(message, button);
+    const bool res = gsapi_client::command_window_message(message, button);
     EXPECT_EQ(res, true);
 };
 
 /* ツールでパラメータ設定のダイアログを表示する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_PARAMETERS) {
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_PARAMETERS) {
     std::vector<GsParameter> params;
     GsNumber param01;
     param01.name = "Number";
@@ -530,20 +530,20 @@ TEST_F(GS_API_TEST, TEST_GS_WINDOW_PARAMETERS) {
     param05.text = "Label";
     params.push_back(param05);
 
-    const bool res = gs_api_interface::command_window_parameters(params);
+    const bool res = gsapi_client::command_window_parameters(params);
     EXPECT_EQ(res, true);
 };
 
 /* ツールでレンダリング設定のダイアログを表示する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_RENDERING) {
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_RENDERING) {
     const bool show_duration = true;
     const bool show_variations = true;
-    const bool res = gs_api_interface::command_window_rendering(show_duration, show_variations);
+    const bool res = gsapi_client::command_window_rendering(show_duration, show_variations);
     EXPECT_EQ(res, true);
 };
 
 /* ツールでテスト用ダイアログを表示する。 */
-TEST_F(GS_API_TEST, TEST_GS_WINDOW_TEST) {
-    const bool res = gs_api_interface::command_window_test();
+TEST_F(GSAPI_TEST, TEST_GS_WINDOW_TEST) {
+    const bool res = gsapi_client::command_window_test();
     EXPECT_EQ(res, true);
 };

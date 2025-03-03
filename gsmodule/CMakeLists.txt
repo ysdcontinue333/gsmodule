@@ -1,6 +1,6 @@
 ## @file    CMakeLists.txt
 ## @brief   gsmodule library
-## @version 1.0.1
+## @version 1.0.2
 ## @auther  ysd
 
 cmake_minimum_required(VERSION 3.16)
@@ -10,12 +10,12 @@ if (NOT GS_MODULE)
 endif()
 
 add_library(${GS_MODULE} STATIC
-    ./source/gs_api_interface.cpp
-    ./source/gspatch_parser.cpp
-    ./include/gs_api_commands.h
-    ./include/gs_api_interface.h
-    ./include/gspatch_element.h
-    ./include/gspatch_parser.h
+    "./source/gsapi_client.cpp"
+    "./source/gspatch_parser.cpp"
+    "./include/gsapi_commands.h"
+    "./include/gsapi_client.h"
+    "./include/gspatch_element.h"
+    "./include/gspatch_parser.h"
 )
 
 target_compile_features(${GS_MODULE} PUBLIC cxx_std_17)
