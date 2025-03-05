@@ -1,11 +1,11 @@
 ﻿/****************************************************************
- * @file    gs_api_interface.h
+ * @file    gsapi_client.h
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.7
+ * @version 1.0.8
  * @auther  ysd
  ****************************************************************/
-#ifndef GS_API_INTERFACE_H
-#define GS_API_INTERFACE_H
+#ifndef GSAPI_CLIENT_H
+#define GSAPI_CLIENT_H
 
 /****************************************************************
  * インクルード
@@ -17,22 +17,22 @@
 /****************************************************************
  * プリプロセッサ定義
  ****************************************************************/
-#define GS_API_INTERFACE_DEFAULT_PORT_NUMBER    (28542)         /* デフォルトのポート番号 */
-#define GS_API_INTERFACE_DEFAULT_IP_ADDRESS     "127.0.0.1"     /* デフォルトのIPアドレス */
-#define GS_API_INTERFACE_DEFAULT_CODEC          "UTF-8"         /* デフォルトの圧縮形式 */
-#define GS_API_INTERFACE_DEFAULT_DELIMITER      "\r"            /* デフォルトのデリミタ(10進コードで13) */
+#define GSAPI_CLIENT_DEFAULT_PORT_NUMBER    (28542)                             /* デフォルトのポート番号 */
+#define GSAPI_CLIENT_DEFAULT_IP_ADDRESS     "127.0.0.1"                         /* デフォルトのIPアドレス */
+#define GSAPI_CLIENT_DEFAULT_CODEC          "UTF-8"                             /* デフォルトの圧縮形式 */
+#define GSAPI_CLIENT_DEFAULT_DELIMITER      "\r"                                /* デフォルトのデリミタ(10進コードで13) */
 
 /****************************************************************
  * 構造体宣言
  ****************************************************************/
 
 /* ツールとの通信に使用されるパラメータの構造体 */
-typedef struct GsApiInterfaceConfigStruct {
-    unsigned int    port_number     = GS_API_INTERFACE_DEFAULT_PORT_NUMBER;     /* 接続先:ポート番号 */
-    std::string     ip_address      = GS_API_INTERFACE_DEFAULT_IP_ADDRESS;      /* 接続先:IPアドレス*/
-    std::string     codec           = GS_API_INTERFACE_DEFAULT_CODEC;           /* メッセージ:圧縮形式 */
-    std::string     delimiter       = GS_API_INTERFACE_DEFAULT_DELIMITER;       /* メッセージ:デリミタ */
-} GsApiInterfaceConfig;
+typedef struct GsApiClientConfigStruct {
+    unsigned int    port_number     = GSAPI_CLIENT_DEFAULT_PORT_NUMBER;         /* 接続先:ポート番号 */
+    std::string     ip_address      = GSAPI_CLIENT_DEFAULT_IP_ADDRESS;          /* 接続先:IPアドレス*/
+    std::string     codec           = GSAPI_CLIENT_DEFAULT_CODEC;               /* メッセージ:圧縮形式 */
+    std::string     delimiter       = GSAPI_CLIENT_DEFAULT_DELIMITER;           /* メッセージ:デリミタ */
+} GsApiClientConfig;
 
 /*スケッチパッドに描かれている曲線を格納する構造体 */
 typedef struct GsDrawingDataStruct {
@@ -155,7 +155,7 @@ typedef std::variant<GsNumber, GsBool, GsString, GsEnum, GsLabel> GsParameter;
 /****************************************************************
  * クラス宣言
  ****************************************************************/
-class gs_api_interface
+class gsapi_client
 {
 public:
     /**************************************************************************
@@ -163,13 +163,13 @@ public:
      * @param   config : 新しい通信設定の参照
      * @return  更新完了でtrueを返す。それ以外の場合にfalseを返す。
      **************************************************************************/
-    static bool set_default_config(const GsApiInterfaceConfig& config);
+    static bool set_default_config(const GsApiClientConfig& config);
     /**************************************************************************
      * @brief   ツールとの通信方法を取得する。
      * @param   config : 現在の通信設定を格納する参照
      * @return  取得完了でtrueを返す。それ以外の場合にfalseを返す。
      **************************************************************************/
-    static bool get_default_config(GsApiInterfaceConfig& config);
+    static bool get_default_config(GsApiClientConfig& config);
 
     /**************************************************************************
      * @brief   起動中のツールに対してメッセージを送る。
@@ -489,7 +489,7 @@ public:
 
 
 private:
-    static GsApiInterfaceConfig gs_config;
+    static GsApiClientConfig gs_config;
 };
 
-#endif /* GS_API_INTERFACE_H */
+#endif /* GSAPI_CLIENT_H */

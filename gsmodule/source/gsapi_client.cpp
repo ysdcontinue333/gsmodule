@@ -1,15 +1,15 @@
 ﻿/****************************************************************
- * @file    gs_api_interface.cpp
+ * @file    gsapi_client.cpp
  * @brief   GameSynth Tool APIを呼び出す
- * @version 1.0.7
+ * @version 1.0.8
  * @auther  ysd
  ****************************************************************/
 
 /****************************************************************
  * インクルード
  ****************************************************************/
-#include "../include/gs_api_interface.h"
-#include "../include/gs_api_commands.h"
+#include "../include/gsapi_client.h"
+#include "../include/gsapi_commands.h"
 #if (_WIN32)
     #include <WinSock2.h>
     #include <ws2tcpip.h>
@@ -51,7 +51,7 @@
 /****************************************************************
  * 変数定義
  ****************************************************************/
-GsApiInterfaceConfig gs_api_interface::gs_config;
+GsApiClientConfig gsapi_client::gs_config;
 
 /****************************************************************
  * 関数宣言
@@ -210,19 +210,19 @@ static bool enum_to_string(const GsLabelAlignment type, std::string& text)
 /****************************************************************
  * クラス定義
  ****************************************************************/
-bool gs_api_interface::set_default_config(const GsApiInterfaceConfig& config)
+bool gsapi_client::set_default_config(const GsApiClientConfig& config)
 {
     gs_config = config;
     return true;
 }
 
-bool gs_api_interface::get_default_config(GsApiInterfaceConfig& config)
+bool gsapi_client::get_default_config(GsApiClientConfig& config)
 {
     config = gs_config;
     return true;
 }
 
-bool gs_api_interface::send_command(const std::string& message, std::string& response)
+bool gsapi_client::send_command(const std::string& message, std::string& response)
 {
 #if (_WIN32)
     WSADATA         wsaData;
@@ -323,7 +323,7 @@ bool gs_api_interface::send_command(const std::string& message, std::string& res
     return true;
 }
 
-bool gs_api_interface::is_connect()
+bool gsapi_client::is_connect()
 {
     /* 無効なコマンドでもメッセージが送信できれば良い */
     std::string response;
@@ -331,44 +331,44 @@ bool gs_api_interface::is_connect()
     return send_command(send_message, response);
 }
 
-bool gs_api_interface::command_get_version(std::string& version)
+bool gsapi_client::command_get_version(std::string& version)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_VERSION << gs_config.delimiter;
+    oss << GSAPI_GET_VERSION << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     version = response;
     return result;
 }
 
-bool gs_api_interface::command_get_commands(std::vector<std::string>& commmand_list)
+bool gsapi_client::command_get_commands(std::vector<std::string>& commmand_list)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_COMMANDS << gs_config.delimiter;
+    oss << GSAPI_GET_COMMANDS << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, commmand_list);
     return result;
 }
 
-bool gs_api_interface::command_get_models(std::vector<std::string>& model_list)
+bool gsapi_client::command_get_models(std::vector<std::string>& model_list)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_MODELS << gs_config.delimiter;
+    oss << GSAPI_GET_MODELS << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, model_list);
     return result;
 }
 
-bool gs_api_interface::command_select_model(const std::string& model_name)
+bool gsapi_client::command_select_model(const std::string& model_name)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SELECT_MODEL
+    oss << GSAPI_SELECT_MODEL
         << MESSAGE_DELIMITER_SPACE << model_name
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -376,11 +376,11 @@ bool gs_api_interface::command_select_model(const std::string& model_name)
     return result;
 }
 
-bool gs_api_interface::command_get_path(const std::string& path_name, std::string& path_value)
+bool gsapi_client::command_get_path(const std::string& path_name, std::string& path_value)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_PATH
+    oss << GSAPI_GET_PATH
         << MESSAGE_DELIMITER_SPACE << path_name
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -389,22 +389,22 @@ bool gs_api_interface::command_get_path(const std::string& path_name, std::strin
     return result;
 }
 
-bool gs_api_interface::command_get_samplerate(std::string& samplerate)
+bool gsapi_client::command_get_samplerate(std::string& samplerate)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_SAMPLERATE << gs_config.delimiter;
+    oss << GSAPI_GET_SAMPLERATE << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     samplerate = response;
     return result;
 }
 
-bool gs_api_interface::command_set_samplerate(const std::string& samplerate)
+bool gsapi_client::command_set_samplerate(const std::string& samplerate)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_SAMPLERATE
+    oss << GSAPI_SET_SAMPLERATE
         << MESSAGE_DELIMITER_SPACE << samplerate
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -412,12 +412,12 @@ bool gs_api_interface::command_set_samplerate(const std::string& samplerate)
     return result;
 }
 
-bool gs_api_interface::command_query_patchnames(const std::string& text, const bool name,
+bool gsapi_client::command_query_patchnames(const std::string& text, const bool name,
     const bool category, const bool tags, std::vector<std::string>& patch_list)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_QUERY_PATCHNAMES
+    oss << GSAPI_QUERY_PATCHNAMES
         << MESSAGE_DELIMITER_SPACE << text
         << MESSAGE_DELIMITER_SPACE << (name ? "1" : "0")
         << MESSAGE_DELIMITER_SPACE << (category ? "1" : "0")
@@ -429,11 +429,11 @@ bool gs_api_interface::command_query_patchnames(const std::string& text, const b
     return result;
 }
 
-bool gs_api_interface::command_query_patch(const std::string& patch_name)
+bool gsapi_client::command_query_patch(const std::string& patch_name)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_QUERY_PATCH
+    oss << GSAPI_QUERY_PATCH
         << MESSAGE_DELIMITER_SPACE << patch_name
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -441,33 +441,33 @@ bool gs_api_interface::command_query_patch(const std::string& patch_name)
     return result;
 }
 
-bool gs_api_interface::command_query_categories(std::vector<std::string>& categoryt_list)
+bool gsapi_client::command_query_categories(std::vector<std::string>& categoryt_list)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_QUERY_CATEGORIES << gs_config.delimiter;
+    oss << GSAPI_QUERY_CATEGORIES << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, categoryt_list);
     return result;
 }
 
-bool gs_api_interface::command_query_tags(std::vector<std::string>& tag_list)
+bool gsapi_client::command_query_tags(std::vector<std::string>& tag_list)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_QUERY_TAGS << gs_config.delimiter;
+    oss << GSAPI_QUERY_TAGS << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, tag_list);
     return result;
 }
 
-bool gs_api_interface::command_load_patch(const std::string& file_path)
+bool gsapi_client::command_load_patch(const std::string& file_path)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_LOAD_PATCH
+    oss << GSAPI_LOAD_PATCH
         << MESSAGE_DELIMITER_SPACE
         << file_path
         << gs_config.delimiter;
@@ -476,11 +476,11 @@ bool gs_api_interface::command_load_patch(const std::string& file_path)
     return result;
 }
 
-bool gs_api_interface::command_save_patch(const std::string& file_path)
+bool gsapi_client::command_save_patch(const std::string& file_path)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SAVE_PATCH
+    oss << GSAPI_SAVE_PATCH
         << MESSAGE_DELIMITER_SPACE
         << file_path
         << gs_config.delimiter;
@@ -489,12 +489,12 @@ bool gs_api_interface::command_save_patch(const std::string& file_path)
     return result;
 }
 
-bool gs_api_interface::command_render_patch(const std::string& file_path, const unsigned int depth,
+bool gsapi_client::command_render_patch(const std::string& file_path, const unsigned int depth,
     const unsigned int channel, const unsigned int duration)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_RENDER_PATCH
+    oss << GSAPI_RENDER_PATCH
         << MESSAGE_DELIMITER_SPACE << file_path
         << MESSAGE_DELIMITER_SPACE << std::to_string(depth)
         << MESSAGE_DELIMITER_SPACE << std::to_string(channel)
@@ -505,44 +505,44 @@ bool gs_api_interface::command_render_patch(const std::string& file_path, const 
     return result;
 }
 
-bool gs_api_interface::command_get_modelname(std::string& model_name)
+bool gsapi_client::command_get_modelname(std::string& model_name)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_MODELNAME << gs_config.delimiter;
+    oss << GSAPI_GET_MODELNAME << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     model_name = response;
     return result;
 }
 
-bool gs_api_interface::command_get_patchname(std::string& patch_name)
+bool gsapi_client::command_get_patchname(std::string& patch_name)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_PATCHNAME << gs_config.delimiter;
+    oss << GSAPI_GET_PATCHNAME << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     patch_name = response;
     return result;
 }
 
-bool gs_api_interface::command_get_variation(float& variation)
+bool gsapi_client::command_get_variation(float& variation)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_VARIATION << gs_config.delimiter;
+    oss << GSAPI_GET_VARIATION << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     variation = static_cast<float>(std::stof(response));
     return result;
 }
 
-bool gs_api_interface::command_set_variation(const float& variation)
+bool gsapi_client::command_set_variation(const float& variation)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_VARIATION
+    oss << GSAPI_SET_VARIATION
         << MESSAGE_DELIMITER_SPACE << variation
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -550,11 +550,11 @@ bool gs_api_interface::command_set_variation(const float& variation)
     return result;
 }
 
-bool gs_api_interface::command_get_drawing(const unsigned int index, std::vector<GsDrawingData>& drawing_data)
+bool gsapi_client::command_get_drawing(const unsigned int index, std::vector<GsDrawingData>& drawing_data)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_DRAWING
+    oss << GSAPI_GET_DRAWING
         << MESSAGE_DELIMITER_SPACE << index
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -581,11 +581,11 @@ bool gs_api_interface::command_get_drawing(const unsigned int index, std::vector
     return result;
 }
 
-bool gs_api_interface::command_set_drawing(const std::vector<GsDrawingData>& drawing_data)
+bool gsapi_client::command_set_drawing(const std::vector<GsDrawingData>& drawing_data)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_DRAWING
+    oss << GSAPI_SET_DRAWING
         << MESSAGE_DELIMITER_SPACE;
     for (auto it = drawing_data.begin(); it != drawing_data.end(); ++it) {
         if (it != drawing_data.begin()) {
@@ -603,33 +603,33 @@ bool gs_api_interface::command_set_drawing(const std::vector<GsDrawingData>& dra
     return result;
 }
 
-bool gs_api_interface::command_get_metacount(unsigned int& meta_count)
+bool gsapi_client::command_get_metacount(unsigned int& meta_count)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_METACOUNT << gs_config.delimiter;
+    oss << GSAPI_GET_METACOUNT << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     meta_count = std::stoi(response);
     return result;
 }
 
-bool gs_api_interface::command_get_metanames(std::vector<std::string>& meta_names)
+bool gsapi_client::command_get_metanames(std::vector<std::string>& meta_names)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_METANAMES << gs_config.delimiter;
+    oss << GSAPI_GET_METANAMES << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, meta_names);
     return result;
 }
 
-bool gs_api_interface::command_get_metaname(const unsigned int& index, std::string& metaname)
+bool gsapi_client::command_get_metaname(const unsigned int& index, std::string& metaname)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_METANAME
+    oss << GSAPI_GET_METANAME
         << MESSAGE_DELIMITER_SPACE << index
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -638,11 +638,11 @@ bool gs_api_interface::command_get_metaname(const unsigned int& index, std::stri
     return result;
 }
 
-bool gs_api_interface::command_get_metavalue(const unsigned int& index, float& metavalue)
+bool gsapi_client::command_get_metavalue(const unsigned int& index, float& metavalue)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_METAVALUE
+    oss << GSAPI_GET_METAVALUE
         << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_INDEX
         << MESSAGE_DELIMITER_SPACE << index
         << gs_config.delimiter;
@@ -652,11 +652,11 @@ bool gs_api_interface::command_get_metavalue(const unsigned int& index, float& m
     return result;
 }
 
-bool gs_api_interface::command_get_metavalue(const std::string& name, float& metavalue)
+bool gsapi_client::command_get_metavalue(const std::string& name, float& metavalue)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_METAVALUE
+    oss << GSAPI_GET_METAVALUE
         << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_NAME
         << MESSAGE_DELIMITER_SPACE << name
         << gs_config.delimiter;
@@ -665,11 +665,11 @@ bool gs_api_interface::command_get_metavalue(const std::string& name, float& met
     metavalue = std::stof(response);
     return result;
 }
-bool gs_api_interface::command_set_metavalue(const unsigned int& index, const float& metavalue)
+bool gsapi_client::command_set_metavalue(const unsigned int& index, const float& metavalue)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_METAVALUE
+    oss << GSAPI_SET_METAVALUE
         << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_INDEX
         << MESSAGE_DELIMITER_SPACE << index
         << MESSAGE_DELIMITER_SPACE << metavalue
@@ -679,11 +679,11 @@ bool gs_api_interface::command_set_metavalue(const unsigned int& index, const fl
     return result;
 }
 
-bool gs_api_interface::command_set_metavalue(const std::string& name, const float& metavalue)
+bool gsapi_client::command_set_metavalue(const std::string& name, const float& metavalue)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_METAVALUE
+    oss << GSAPI_SET_METAVALUE
         << MESSAGE_DELIMITER_SPACE << GS_METAVALUE_BY_NAME
         << MESSAGE_DELIMITER_SPACE << name
         << MESSAGE_DELIMITER_SPACE << metavalue
@@ -693,33 +693,33 @@ bool gs_api_interface::command_set_metavalue(const std::string& name, const floa
     return result;
 }
 
-bool gs_api_interface::command_get_curvescount(unsigned int& curves_count)
+bool gsapi_client::command_get_curvescount(unsigned int& curves_count)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_CURVESCOUNT << gs_config.delimiter;
+    oss << GSAPI_GET_CURVESCOUNT << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     curves_count = std::stoi(response);
     return result;
 }
 
-bool gs_api_interface::command_get_curvenames(std::vector<std::string>& curve_names)
+bool gsapi_client::command_get_curvenames(std::vector<std::string>& curve_names)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_CURVENAMES << gs_config.delimiter;
+    oss << GSAPI_GET_CURVENAMES << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     string_split(response, MESSAGE_DELIMITER_COMMA, curve_names);
     return result;
 }
 
-bool gs_api_interface::command_get_curvename(const unsigned int& curve_index, std::string& curve_name)
+bool gsapi_client::command_get_curvename(const unsigned int& curve_index, std::string& curve_name)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_CURVENAME
+    oss << GSAPI_GET_CURVENAME
         << MESSAGE_DELIMITER_SPACE << curve_index
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -728,11 +728,11 @@ bool gs_api_interface::command_get_curvename(const unsigned int& curve_index, st
     return result;
 }
 
-bool gs_api_interface::command_get_curvevalue(const unsigned int& curve_index, GsCurveValue& curve_value)
+bool gsapi_client::command_get_curvevalue(const unsigned int& curve_index, GsCurveValue& curve_value)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_CURVEVALUE
+    oss << GSAPI_GET_CURVEVALUE
         << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_INDEX
         << MESSAGE_DELIMITER_SPACE << curve_index
         << gs_config.delimiter;
@@ -766,11 +766,11 @@ bool gs_api_interface::command_get_curvevalue(const unsigned int& curve_index, G
     return result;
 }
 
-bool gs_api_interface::command_get_curvevalue(const std::string& curve_name, GsCurveValue& curve_value)
+bool gsapi_client::command_get_curvevalue(const std::string& curve_name, GsCurveValue& curve_value)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_GET_CURVEVALUE
+    oss << GSAPI_GET_CURVEVALUE
         << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_NAME
         << MESSAGE_DELIMITER_SPACE << "\"" << curve_name << "\""
         << gs_config.delimiter;
@@ -804,11 +804,11 @@ bool gs_api_interface::command_get_curvevalue(const std::string& curve_name, GsC
     return result;
 }
 
-bool gs_api_interface::command_set_curvevalue(const unsigned int& curve_index, const GsCurveValue& curve_value)
+bool gsapi_client::command_set_curvevalue(const unsigned int& curve_index, const GsCurveValue& curve_value)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_CURVEVALUE
+    oss << GSAPI_SET_CURVEVALUE
         << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_INDEX
         << MESSAGE_DELIMITER_SPACE << curve_index
         << MESSAGE_DELIMITER_SPACE << "\"";
@@ -827,11 +827,11 @@ bool gs_api_interface::command_set_curvevalue(const unsigned int& curve_index, c
     return result;
 }
 
-bool gs_api_interface::command_set_curvevalue(const std::string& curve_name, const GsCurveValue& curve_value)
+bool gsapi_client::command_set_curvevalue(const std::string& curve_name, const GsCurveValue& curve_value)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_SET_CURVEVALUE
+    oss << GSAPI_SET_CURVEVALUE
         << MESSAGE_DELIMITER_SPACE << GS_CURVE_BY_NAME
         << MESSAGE_DELIMITER_SPACE << "\"" << curve_name << "\""
         << MESSAGE_DELIMITER_SPACE << "\"";
@@ -850,64 +850,64 @@ bool gs_api_interface::command_set_curvevalue(const std::string& curve_name, con
     return result;
 }
 
-bool gs_api_interface::command_play()
+bool gsapi_client::command_play()
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_PLAY << gs_config.delimiter;
+    oss << GSAPI_PLAY << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     return result;
 }
 
-bool gs_api_interface::command_stop()
+bool gsapi_client::command_stop()
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_STOP << gs_config.delimiter;
+    oss << GSAPI_STOP << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     return result;
 }
 
-bool gs_api_interface::command_is_playing(bool& is_playing)
+bool gsapi_client::command_is_playing(bool& is_playing)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_IS_PLAYING << gs_config.delimiter;
+    oss << GSAPI_IS_PLAYING << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     is_playing = (std::stoi(response) == 1) ? true : false;
     return result;
 }
 
-bool gs_api_interface::command_is_infinite(bool& is_infinite)
+bool gsapi_client::command_is_infinite(bool& is_infinite)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_IS_INFINITE << gs_config.delimiter;
+    oss << GSAPI_IS_INFINITE << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     is_infinite = (std::stoi(response) == 1) ? true : false;
     return result;
 }
 
-bool gs_api_interface::command_is_randomized(bool& is_randomized)
+bool gsapi_client::command_is_randomized(bool& is_randomized)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_IS_RANDOMIZED << gs_config.delimiter;
+    oss << GSAPI_IS_RANDOMIZED << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     is_randomized = (std::stoi(response) == 1) ? true : false;
     return result;
 }
 
-bool gs_api_interface::command_enable_events(const bool is_notification)
+bool gsapi_client::command_enable_events(const bool is_notification)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_ENABLE_EVENTS
+    oss << GSAPI_ENABLE_EVENTS
         << MESSAGE_DELIMITER_SPACE << ((is_notification == true) ? 1 : 0)
         << gs_config.delimiter;
     const std::string send_message = oss.str();
@@ -915,33 +915,33 @@ bool gs_api_interface::command_enable_events(const bool is_notification)
     return result;
 }
 
-bool gs_api_interface::command_window_back()
+bool gsapi_client::command_window_back()
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_WINDOW_BACK
+    oss << GSAPI_WINDOW_BACK
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     return result;
 }
 
-bool gs_api_interface::command_window_front()
+bool gsapi_client::command_window_front()
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_WINDOW_FRONT
+    oss << GSAPI_WINDOW_FRONT
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
     return result;
 }
 
-bool gs_api_interface::command_window_message(const std::string& message, const GsWindowButton& button)
+bool gsapi_client::command_window_message(const std::string& message, const GsWindowButton& button)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_WINDOW_MESSAGE
+    oss << GSAPI_WINDOW_MESSAGE
         << MESSAGE_DELIMITER_SPACE << message;
     std::string button_setting;
     if (!enum_to_string(button, button_setting)) {
@@ -954,7 +954,7 @@ bool gs_api_interface::command_window_message(const std::string& message, const 
     return result;
 }
 
-bool gs_api_interface::command_window_parameters(const std::vector<GsParameter>& params)
+bool gsapi_client::command_window_parameters(const std::vector<GsParameter>& params)
 {
     if (params.size() == 0) {
         return false;
@@ -963,7 +963,7 @@ bool gs_api_interface::command_window_parameters(const std::vector<GsParameter>&
     std::string response;
     std::ostringstream oss;
     std::string message;
-    oss << GS_API_WINDOW_PARAMETERS;
+    oss << GSAPI_WINDOW_PARAMETERS;
     for (auto param : params) {
         if (std::holds_alternative<GsNumber>(param)) {
             /* 数値パラメーター {NUMBER, "Name", Type, "Unit", Min, Max, Def, Decimals} */
@@ -1049,11 +1049,11 @@ bool gs_api_interface::command_window_parameters(const std::vector<GsParameter>&
     return result;
 }
 
-bool gs_api_interface::command_window_rendering(const bool& show_duration, const bool& show_variations)
+bool gsapi_client::command_window_rendering(const bool& show_duration, const bool& show_variations)
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_WINDOW_RENDERING
+    oss << GSAPI_WINDOW_RENDERING
         << MESSAGE_DELIMITER_SPACE << ((show_duration) ? 1 : 0)
         << MESSAGE_DELIMITER_SPACE << ((show_variations) ? 1 : 0)
         << gs_config.delimiter;
@@ -1062,11 +1062,11 @@ bool gs_api_interface::command_window_rendering(const bool& show_duration, const
     return result;
 }
 
-bool gs_api_interface::command_window_test()
+bool gsapi_client::command_window_test()
 {
     std::string response;
     std::ostringstream oss;
-    oss << GS_API_WINDOW_TEST
+    oss << GSAPI_WINDOW_TEST
         << gs_config.delimiter;
     const std::string send_message = oss.str();
     bool result = send_command(send_message, response);
