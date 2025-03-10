@@ -23,8 +23,9 @@
  * プリプロセッサ定義
  ****************************************************************/
 /* ツールとの通信時に待機する時間 */
-#define WAIT_TO_READY_READ_MSEC         (300) /* 備考:読込待機しないと一部コマンドで失敗する */
+#define WAIT_TO_READY_READ_MSEC         (100)
 #define WAIT_TO_RECEIVE_MESSAGE_SEC     (1)
+#define MAX_RETRY_COUNT = 10;
 
 /* ツールから受信するメッセージサイズ */
 #define MAX_RECEIVE_MESSAGE_SIZE        (4096)
@@ -285,9 +286,6 @@ bool gsapi_client::send_command(const std::string& message, std::string& respons
         return false;
     }
 
-    /* 確実に成功させるため少し待機させる */
-    Sleep(WAIT_TO_READY_READ_MSEC);
-
     /* タイムアウト設定 */
     recv_tv.tv_sec = WAIT_TO_RECEIVE_MESSAGE_SEC;
     recv_tv.tv_usec = 0;
@@ -298,17 +296,26 @@ bool gsapi_client::send_command(const std::string& message, std::string& respons
     }
 
     /* メッセージを正しく受け取れているか確認する */
+    int retry_count = 0;
     while (1) {
         len = recv(sock, buffer, sizeof(buffer), 0);
         if (len < 0) {
-            if (errno == EINTR) {
-                continue;
-            } else if (errno == EAGAIN) {
-                perror("[gsmodule]failed to receive message due to timeout.");
-            } else {
+            //if (errno == EINTR) {
+            //    continue;
+            //} else if (errno == EAGAIN) {
+            //    perror("[gsmodule]failed to receive message due to timeout.");
+            //} else {
+            //    perror("[gsmodule]failed to receive message.");
+            //}
+            //break;
+            if (retry_count > MAX_RETRY_COUNT) {
                 perror("[gsmodule]failed to receive message.");
+                break;
             }
-            break;
+            else {
+                Sleep(WAIT_TO_READY_READ_MSEC);
+                retry_count++;
+            }
         }
         else {
             response = buffer;
