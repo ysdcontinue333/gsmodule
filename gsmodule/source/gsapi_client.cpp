@@ -25,7 +25,7 @@
 /* ツールとの通信時に待機する時間 */
 #define WAIT_TO_READY_READ_MSEC         (100)
 #define WAIT_TO_RECEIVE_MESSAGE_SEC     (1)
-#define MAX_RETRY_COUNT = 10;
+#define MAX_RETRY_COUNT                 (10)
 
 /* ツールから受信するメッセージサイズ */
 #define MAX_RECEIVE_MESSAGE_SIZE        (4096)
